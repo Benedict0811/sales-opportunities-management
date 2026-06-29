@@ -3,4 +3,7 @@
 00-Inbox/*.md
 00-Inbox/*.docx
 00-Inbox/*.pdf
-00-Inbox/done/
+00-Inbox/done/*.txt
+00-Inbox/done/*.md
+00-Inbox/done/*.docx
+00-Inbox/done/*.pdf

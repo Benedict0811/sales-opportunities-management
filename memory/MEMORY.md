@@ -1,0 +1,3 @@
+- [Sales Opp Management](sales-opp-management.md) — architecture, data format, conventions for the file-based sales tracker
+- [User Sales Role](user-sales-role.md) — sales professional context, preferences, and working style
+- [Sales Opp Lessons](sales-opp-lessons.md) — 踩坑经验和注意事项，供团队同事参考避免重复踩坑

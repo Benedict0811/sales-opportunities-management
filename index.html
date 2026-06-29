@@ -1,0 +1,2861 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sales Opportunities Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#020617;--bg-elevated:#0E1223;--surface:rgba(255,255,255,0.06);--surface-2:rgba(255,255,255,0.03);
+  --border:rgba(255,255,255,0.08);--radius:12px;--radius-sm:8px;--radius-xs:4px;
+  --font-body:'Fira Sans',sans-serif;--font-mono:'Fira Code',monospace;
+  --sidebar-w:220px;--transition:200ms ease-out;
+  --text-primary:rgba(255,255,255,0.95);--text-secondary:rgba(255,255,255,0.65);
+  --text-muted:rgba(255,255,255,0.35);
+  --accent:#6366F1;--accent-glow:rgba(99,102,241,0.25);
+  --success:#22C55E;--warning:#FBBF24;--danger:#EF4444;--info:#3B82F6;
+}
+.light{
+  --bg:#f0f4f8;--bg-elevated:#fff;--surface:rgba(15,23,42,0.04);--surface-2:rgba(15,23,42,0.02);
+  --border:rgba(15,23,42,0.1);--text-primary:rgba(15,23,42,0.95);
+  --text-secondary:rgba(15,23,42,0.6);--text-muted:rgba(15,23,42,0.35);
+  --accent:#4F46E5;--accent-glow:rgba(79,70,229,0.15);
+}
+html{font-size:14px}
+body{font-family:var(--font-body);background:linear-gradient(135deg,#020617 0%,#0a0e27 40%,#1a1040 100%);color:var(--text-primary);display:flex;min-height:100vh}
+.light body{background:linear-gradient(135deg,#f0f4f8 0%,#e8ecf2 40%,#e2e8f0 100%)}
+.glass{background:rgba(255,255,255,0.08);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius)}
+.light .glass{background:rgba(255,255,255,0.75);backdrop-filter:blur(8px);border:1px solid rgba(15,23,42,0.08)}
+.glass-sm{background:rgba(255,255,255,0.05);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius-sm)}
+.light .glass-sm{background:rgba(255,255,255,0.65);border:1px solid rgba(15,23,42,0.06)}
+button{cursor:pointer;font-family:var(--font-body);transition:var(--transition)}
+.btn{padding:8px 18px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;border:none}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{filter:brightness(1.15)}
+.btn-ghost{background:transparent;color:var(--text-secondary);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface);color:var(--text-primary)}
+.btn-danger{background:var(--danger);color:#fff}
+#sidebar{width:var(--sidebar-w);min-height:100vh;background:rgba(10,14,30,0.95);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:fixed;left:0;top:0;z-index:10}
+.light #sidebar{background:rgba(255,255,255,0.97);border-right:1px solid rgba(15,23,42,0.08)}
+.logo{padding:20px 18px;display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#6366F1,#8B5CF6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;font-family:var(--font-mono)}
+.logo-text{font-size:13px;font-weight:700;color:var(--text-primary)}
+.logo-sub{font-size:9px;color:var(--text-muted);letter-spacing:.5px}
+.nav-item{padding:10px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:var(--transition);color:var(--text-muted);font-size:12px;font-weight:500;border-left:2px solid transparent}
+.nav-item:hover{background:var(--surface);color:var(--text-secondary)}
+.nav-item.active{color:var(--accent);background:var(--accent-glow);border-left-color:var(--accent)}
+.nav-item svg{width:18px;height:18px;fill:currentColor;flex-shrink:0}
+.user-info{padding:16px 18px;border-top:1px solid var(--border);margin-top:auto}
+.user-avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#6366F1,#8B5CF6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px}
+.user-name{font-size:12px;font-weight:600;color:var(--text-primary)}
+.user-role{font-size:9px;color:var(--text-muted)}
+#main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;background:transparent}
+#topbar{padding:14px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);flex-shrink:0}
+#topbar h1{font-size:17px;font-weight:700;margin:0}
+#topbar .sub{font-size:12px;color:var(--text-muted);margin-top:2px}
+.topbar-actions{display:flex;gap:10px;align-items:center}
+#content{padding:20px 24px;flex:1;overflow-y:auto}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpi-card{padding:14px 16px;text-align:center}
+.kpi-card .label{font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.kpi-card .value{font-size:24px;font-weight:700;font-family:var(--font-mono);color:var(--text-primary)}
+.kpi-card .delta{font-size:12px;margin-top:3px;color:var(--text-secondary)}
+.panel{padding:18px 20px}
+.panel h3{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.panel h3 .link{font-size:12px;color:var(--accent);cursor:pointer}
+.dash-grid{display:grid;gap:14px;margin-bottom:14px}
+.dash-2-1{grid-template-columns:2fr 1fr}
+.dash-1-1{grid-template-columns:1fr 1fr}
+.dash-1{grid-template-columns:1fr}
+.status-badge{font-size:11px;padding:3px 8px;border-radius:20px;font-weight:500;cursor:pointer}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.opp-card{cursor:pointer;transition:var(--transition)}
+.opp-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+.opp-card .card-header{padding:14px 16px 10px;border-bottom:1px solid var(--border)}
+.opp-card .card-body{padding:12px 16px}
+.opp-card .card-meta{font-size:11px;color:var(--text-muted);margin-bottom:6px}
+.opp-card .card-value{font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--text-primary)}
+.opp-card .card-prob{font-size:11px;font-family:var(--font-mono);color:var(--text-secondary)}
+.opp-card .card-next{font-size:11px;color:var(--text-muted);margin-top:4px}
+.stage-colors{Discovery:'#3B82F6','Proposal':'#FBBF24',Negotiation:'#818CF8','Verbal Commit':'#22C55E',Won:'var(--success)',Lost:'var(--danger)'}
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{text-align:left;padding:8px 10px;color:var(--text-muted);font-weight:500;border-bottom:1px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:.3px}
+.data-table td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.light .data-table td{border-bottom:1px solid rgba(15,23,42,0.04)}
+.data-table tr{cursor:default;transition:var(--transition)}
+.data-table tr:hover{background:var(--surface)}
+.ct-input,.detail-content input,.detail-content [id^="ct-new-"]{background:transparent;border:1px solid var(--border);border-radius:var(--radius-xs);padding:4px 6px;color:var(--text-primary);font-family:var(--font-body);font-size:11px;outline:none;transition:border-color 150ms}
+.ct-input:focus,.detail-content input:focus,.detail-content [id^="ct-new-"]:focus{border-color:var(--accent)}
+.data-table thead th[style*="text-align:center"]{text-align:center}
+#detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:20;opacity:0;pointer-events:none;transition:opacity 200ms}
+#detail-overlay.open{opacity:1;pointer-events:auto}
+#detail-panel{position:fixed;right:0;top:0;bottom:0;width:860px;background:var(--bg-elevated);border-left:1px solid var(--border);z-index:21;transform:translateX(100%);transition:transform 250ms ease-out;overflow-y:auto;padding:32px}
+#detail-panel.wide{width:96vw;max-width:1400px;left:2vw;border-radius:var(--radius);border:1px solid var(--border)}
+#detail-panel.open{transform:translateX(0)}
+.light #detail-panel{background:#fff;border-left:1px solid rgba(15,23,42,0.1)}
+.close-btn{background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;float:right}
+.close-btn:hover{color:var(--text-primary)}
+.detail-section{margin-bottom:18px}
+.detail-section h4{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.detail-content{font-size:12px;color:var(--text-secondary);line-height:1.6}
+.tl-body.open{max-height:none!important;overflow:visible!important}
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:30;display:none;align-items:center;justify-content:center}
+#modal-overlay.open{display:flex}
+#modal-box{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:24px;width:90%;max-width:520px;max-height:80vh;overflow-y:auto}
+.light #modal-box{background:#fff;border:1px solid rgba(15,23,42,0.1)}
+#modal-box h2{font-size:16px;font-weight:700;margin-bottom:18px}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:8px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text-primary);font-size:12px;font-family:var(--font-body);outline:none}
+.form-group textarea{resize:vertical;min-height:60px}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+#toast{position:fixed;bottom:24px;right:24px;padding:10px 18px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;color:#fff;z-index:50;opacity:0;transform:translateY(10px);transition:all 200ms}
+#toast.show{opacity:1;transform:translateY(0)}
+#toast.success{background:var(--success)}
+#toast.error{background:var(--danger)}
+.progress-bar{height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin:4px 0}
+.light .progress-bar{background:rgba(15,23,42,0.06)}
+.progress-fill{height:100%;border-radius:3px}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--text-muted)}
+.empty-state svg{width:48px;height:48px;fill:currentColor;margin-bottom:12px;opacity:.3}
+.empty-state p{font-size:13px}
+[contenteditable]{outline:none;border-radius:3px;padding:2px 4px;transition:var(--transition)}
+[contenteditable]:focus{box-shadow:0 0 0 1px var(--accent);background:rgba(99,102,241,0.05)}
+[contenteditable]:hover{background:rgba(255,255,255,0.04)}
+.light [contenteditable]:hover{background:rgba(15,23,42,0.03)}
+.action-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11px}
+.action-item input[type=checkbox]{accent-color:var(--accent)}
+@media(max-width:1024px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .dash-2-1,.dash-1-1{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  #sidebar{width:60px}
+  .nav-item span,.user-name,.user-role,.logo-text,.logo-sub{display:none}
+  .nav-item{justify-content:center;padding:12px}
+  #main{margin-left:60px}
+  .kpi-grid{grid-template-columns:1fr}
+  #detail-panel{width:100%!important;left:0!important;border-radius:0!important;border:none!important}
+  #detail-panel.wide{width:100%!important;max-width:100%!important;left:0!important}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@keyframes barGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.opp-health-row:hover{opacity:.85;transform:translateX(2px)}
+.opp-health-row{transition:var(--transition)}
+@media(max-width:1024px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .dash-2col{grid-template-columns:1fr!important}
+  div[style*="grid-template-columns:1fr 1fr 1fr"]{grid-template-columns:1fr 1fr!important}
+}
+.dash-alert-strip{display:flex;gap:8px;padding:12px 16px;margin-bottom:18px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);overflow-x:auto;flex-wrap:wrap;align-items:center}
+.dash-alert-item{font-size:12px;font-weight:700;padding:6px 14px;border-radius:16px;white-space:nowrap;display:flex;align-items:center;gap:5px;letter-spacing:.2px}
+.dash-alert-strip.has-critical{border-color:rgba(239,68,68,0.25);animation:pulse-border 2s ease-in-out infinite}
+@keyframes pulse-border{0%,100%{border-color:rgba(239,68,68,0.15)}50%{border-color:rgba(239,68,68,0.45)}}
+.dash-action-card{padding:10px 14px;border-radius:var(--radius-sm);margin-bottom:8px;cursor:pointer;transition:var(--transition)}
+.dash-action-card:hover{filter:brightness(1.08);transform:translateX(3px)}
+.dash-action-card.overdue{background:rgba(239,68,68,0.07);border-left:3px solid var(--danger)}
+.dash-action-card.due-soon{background:rgba(251,191,36,0.06);border-left:3px solid var(--warning)}
+.dash-action-card.upcoming{background:var(--surface);border-left:3px solid var(--info)}
+.dash-issues-panel .issue-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:var(--transition)}
+.dash-issues-panel .issue-row:hover{background:var(--surface);padding-left:4px}
+.dash-issues-panel .issue-type{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;flex-shrink:0}
+.traffic-light{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-size:11px;font-weight:800;flex-shrink:0}
+.traffic-light.green{background:rgba(34,197,94,0.15);color:var(--success);border:2px solid var(--success)}
+.traffic-light.yellow{background:rgba(251,191,36,0.15);color:var(--warning);border:2px solid var(--warning)}
+.traffic-light.red{background:rgba(239,68,68,0.15);color:var(--danger);border:2px solid var(--danger)}
+.health-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:var(--transition);margin-bottom:12px}
+.health-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,0.2)}
+.health-card.critical{border-left:3px solid var(--danger)}
+.health-card.caution{border-left:3px solid var(--warning)}
+.health-card.healthy{border-left:3px solid var(--success)}
+.health-detail{max-height:0;overflow:hidden;transition:max-height 300ms ease-out}
+.health-card.open .expand-arrow{transform:rotate(180deg)}
+.health-card.open .health-detail{max-height:800px;padding-bottom:4px}
+</style>
+</head>
+<body class="light">
+
+<div id="sidebar">
+  <div class="logo">
+    <div class="logo-icon">S</div>
+    <div><div class="logo-text">SOM</div><div class="logo-sub">Sales Opp. Mgmt</div></div>
+  </div>
+  <div class="nav-item active" data-view="dashboard" onclick="switchView('dashboard')">
+    <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z"/></svg>
+    <span>Dashboard</span>
+  </div>
+  <div class="nav-item" data-view="clients" onclick="switchView('clients')">
+    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+    <span>Clients</span>
+  </div>
+  <div class="nav-item" data-view="opportunities" onclick="switchView('opportunities')">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-4-7V3.5L18.5 9H12z"/></svg>
+    <span>Opportunities</span>
+  </div>
+  <div class="nav-item" data-view="pipeline" onclick="switchView('pipeline')">
+    <svg viewBox="0 0 24 24"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2 0c1.74.17 3.37.77 4.77 1.72L15.3 6.2A5.95 5.95 0 0013 5.3V2zm6.49 2.95c.94 1.4 1.54 3.03 1.71 4.77h-3.3c-.2-1.05-.65-2.01-1.3-2.83l2.89-1.94zm1.71 6.77c-.17 1.74-.77 3.37-1.71 4.77l-2.89-1.94c.65-.82 1.1-1.78 1.3-2.83h3.3zM16.77 19.28A10.01 10.01 0 0113 20.7v-3.3c1.05-.2 2.01-.65 2.83-1.3l1.94 2.89z"/></svg>
+    <span>Pipeline</span>
+  </div>
+  <div class="nav-item" data-view="requirement" onclick="switchView('requirement')">
+    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+    <span>Requirement</span>
+  </div>
+  <div class="nav-item" data-view="activity" onclick="switchView('activity')">
+    <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+    <span>Activity</span>
+  </div>
+  <div class="nav-item" data-view="resources" onclick="switchView('resources')">
+    <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>
+    <span>Resources</span>
+  </div>
+  <div class="nav-item" data-view="archive" onclick="switchView('archive')">
+    <svg viewBox="0 0 24 24"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.5-.17-.93-.46-1.27zM12 17.3l-4.7-4.7 1.4-1.4 3.3 3.3 3.3-3.3 1.4 1.4-4.7 4.7z"/></svg>
+    <span>Archive</span>
+  </div>
+  <div class="user-info">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="user-avatar"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
+      <div><div class="user-name">User</div><div class="user-role">Sales</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="main">
+  <div id="topbar">
+    <div>
+      <h1 id="page-title"></h1>
+      <div id="page-sub" class="sub"></div>
+    </div>
+    <div class="topbar-actions">
+      <button id="new-btn" class="btn btn-primary" style="font-size:11px" onclick="openCreateModal()">+ New</button>
+      <button id="theme-btn" class="btn btn-ghost" style="display:flex;align-items:center;gap:5px;font-size:11px;padding:5px 10px" onclick="toggleTheme()">
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path id="theme-icon-path" d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 3.74l.71.71-3.53 3.53-1.77-1.77.71-.71 1.06 1.06 2.82-2.82zm3.76.34v2h3v-2h-3zm-10-2.06l.71-.71 3.53 3.53-.71.71-3.53-3.53zM11 20.45h2V17.5h-2v2.95zm-5.65-.05l1.79-1.8-1.41-1.41-1.79 1.79 1.41 1.42z"/></svg>
+        <span id="theme-label">Dark</span>
+      </button>
+    </div>
+  </div>
+  <div id="content"></div>
+</div>
+
+<div id="detail-overlay" onclick="closeDetail()"></div>
+<div id="detail-panel">
+  <button class="close-btn" onclick="closeDetail()">&times;</button>
+  <div id="detail-content"></div>
+</div>
+
+<div id="modal-overlay">
+  <div id="modal-box">
+    <h2 id="modal-title"></h2>
+    <div id="modal-body"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="modal-submit" onclick="submitCreate()">Create</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+window.onerror=function(msg,url,line){document.getElementById('content').innerHTML='<div style="color:red;padding:20px;font-size:13px">JS ERROR: '+msg+' (line '+line+')</div>'};
+window.addEventListener('unhandledrejection',function(e){document.getElementById('content').innerHTML='<div style="color:red;padding:20px;font-size:13px">ASYNC ERROR: '+e.reason+'</div>'});
+
+// --- API Helpers ---
+async function api(path){const r=await fetch(path);return r.json()}
+async function apiPost(path,body){const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return r.json()}
+async function apiPut(path,body){const r=await fetch(path,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return r.json()}
+
+let _activeOppId=null;
+function toggleBriefing(el){
+  var s=el.nextElementSibling.style;
+  var hidden=s.display==='none';
+  s.display=hidden?'block':'none';
+  el.querySelector('span:last-child').textContent=hidden?'▼':'►';
+}
+async function saveOppField(id,field,value){
+  const o=summaryData.opportunities.find(x=>x.id===id);
+  const curr=o?o[field]:undefined;
+  const currStr=typeof curr==='object'?JSON.stringify(curr):String(curr||'');
+  const valStr=typeof value==='object'?JSON.stringify(value):String(value||'');
+  if(currStr===valStr)return;
+  const res=await apiPut(`/api/opportunities/${encodeURIComponent(id)}`,{[field]:value});
+  if(res.error)return showToast(res.error,'error');
+  await loadAll();
+  if(_activeOppId===id)openOppDetail(id);
+  showToast('Updated');
+}
+function editTargets(){
+  const q=summaryData.quarterly||{};
+  const targets=q.targets||[];
+  const overlay=document.getElementById('target-edit-overlay');
+  if(overlay){overlay.remove();return;}
+  const el=document.createElement('div');
+  el.id='target-edit-overlay';
+  el.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:40;display:flex;align-items:center;justify-content:center';
+  let rows=targets.map(t=>`<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><input type="text" value="${escAttr(t.quarter)}" class="te-q" style="width:100px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);color:var(--text-primary);font-family:var(--font-mono);font-size:12px" placeholder="2026-Q3"><input type="number" value="${t.amount}" class="te-a" style="width:100px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);color:var(--text-primary);font-family:var(--font-mono);font-size:12px" placeholder="800"><button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:16px">&times;</button></div>`).join('');
+  if(!rows)rows='<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><input type="text" class="te-q" style="width:100px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);color:var(--text-primary);font-family:var(--font-mono);font-size:12px" placeholder="2026-Q3"><input type="number" class="te-a" style="width:100px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);color:var(--text-primary);font-family:var(--font-mono);font-size:12px" placeholder="800"><button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:16px">&times;</button></div>';
+  el.innerHTML=`<div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:24px;width:90%;max-width:400px"><h2 style="font-size:15px;font-weight:700;margin:0 0 4px">Quarterly Targets</h2><div style="font-size:10px;color:var(--text-muted);margin-bottom:14px">Unit: USD 万</div><div id="te-rows">${rows}</div><button onclick="addTargetRow()" style="font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;margin-bottom:14px">+ Add Quarter</button><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-ghost" onclick="document.getElementById('target-edit-overlay').remove()">Cancel</button><button class="btn btn-primary" onclick="saveTargets()">Save</button></div></div>`;
+  document.body.appendChild(el);
+}
+function addTargetRow(){
+  const c=document.getElementById('te-rows');
+  const d=document.createElement('div');
+  d.style.cssText='display:flex;gap:8px;align-items:center;margin-bottom:6px';
+  d.innerHTML=`<input type="text" class="te-q" style="width:100px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);color:var(--text-primary);font-family:var(--font-mono);font-size:12px" placeholder="2026-Q3"><input type="number" class="te-a" style="width:100px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);color:var(--text-primary);font-family:var(--font-mono);font-size:12px" placeholder="800"><button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:16px">&times;</button>`;
+  c.appendChild(d);
+}
+async function saveTargets(){
+  const rows=document.querySelectorAll('#te-rows > div');
+  const targets=[];
+  rows.forEach(r=>{
+    const q=r.querySelector('.te-q');
+    const a=r.querySelector('.te-a');
+    if(q&&a&&q.value.trim()&&a.value)targets.push({quarter:q.value.trim(),amount:parseInt(a.value)||0});
+  });
+  const res=await apiPut('/api/targets',{targets});
+  if(res.error)return showToast(res.error,'error');
+  document.getElementById('target-edit-overlay').remove();
+  await loadAll();renderView();
+  showToast('Targets saved');
+}
+async function deleteBriefing(oppId,filename){
+  const res=await fetch(`/api/opportunities/${encodeURIComponent(oppId)}/briefings/${encodeURIComponent(filename)}`,{method:'DELETE'});
+  const data=await res.json();
+  if(data.error)return showToast(data.error,'error');
+  await loadAll();renderView();
+  showToast('Briefing removed');
+}
+async function saveNextAction(id){
+  const panel=document.getElementById('oppDetailPanel');
+  if(!panel)return;
+  const descEl=panel.querySelector('.na-desc');
+  const dateEl=panel.querySelector('.na-date');
+  const o=summaryData.opportunities.find(x=>x.id===id);
+  if(!o)return;
+  const desc=(descEl?descEl.textContent.trim():'');
+  const due=dateEl?dateEl.value:'';
+  const status=o.nextActionStatus||'Planned';
+  let na=desc;
+  if(due)na+=` — by ${due}`;
+  na+=` — [${status}]`;
+  const res=await apiPut(`/api/opportunities/${encodeURIComponent(id)}`,{nextAction:na,nextActionDue:due,nextActionStatus:status});
+  if(res.error)return showToast(res.error,'error');
+  await loadAll();
+  if(_activeOppId===id)openOppDetail(id);
+  showToast('Updated');
+}
+async function cycleNextActionStatus(id){
+  const cycle=['Planned','In Progress','Done'];
+  const o=summaryData.opportunities.find(x=>x.id===id);
+  if(!o)return;
+  const curr=o.nextActionStatus||'计划中';
+  const next=cycle[(cycle.indexOf(curr)+1)%cycle.length];
+  const desc=(o.nextAction||'').replace(/by\s*\d{4}-\d{2}-\d{2}/,'').replace(/—\s*\[(Planned|In Progress|Done)\]/,'').replace(/\s*—\s*$/,'').trim();
+  const due=o.nextActionDue||'';
+  let na=desc;
+  if(due)na+=` — by ${due}`;
+  na+=` — [${next}]`;
+  const res=await apiPut(`/api/opportunities/${encodeURIComponent(id)}`,{nextAction:na,nextActionDue:due,nextActionStatus:next});
+  if(res.error)return showToast(res.error,'error');
+  await loadAll();
+  if(_activeOppId===id)openOppDetail(id);
+  showToast('Updated');
+}
+
+// --- State ---
+let currentView='dashboard';
+let summaryData={};
+
+// --- Helpers ---
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function escAttr(s){return String(s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;')}
+function fmt$(v){const s=String(v||'').trim();let n=parseFloat(s.replace(/[^0-9.]/g,''))||0;const u=s.match(/[KkMm]$/);if(u){const c=u[0].toLowerCase();if(c==='k')n*=1000;else if(c==='m')n*=1000000}return '$'+n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0})}
+function fmtDate(d){if(!d)return'-';try{return new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}catch{return d}}
+function daysSince(d){if(!d)return 999;const t=new Date(d+'T00:00:00');return Math.floor((Date.now()-t)/(1000*60*60*24))}
+function stageColor(s){return{Discovery:'#3B82F6',Proposal:'#FBBF24',Negotiation:'#818CF8','Verbal Commit':'#22C55E',Won:'var(--success)',Lost:'var(--danger)'}[s]||'var(--text-muted)'}
+function chipCls(active){return`display:inline-flex;align-items:center;gap:5px;padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:var(--transition);border:1px solid ${active?'var(--accent)':'var(--border)'};background:${active?'var(--accent-glow)':'var(--surface)'};color:${active?'var(--accent)':'var(--text-muted)'}`}
+
+function md2html(md){
+  if(!md)return '';
+  const lines=escHtml(md).split('\n');
+  let out='',inTable=false;
+  for(let i=0;i<lines.length;i++){
+    const ln=lines[i];
+    const heading=ln.match(/^(#{1,3}) (.+)$/);
+    if(heading){
+      if(inTable){out+='</table>';inTable=false;}
+      const tag='h'+heading[1].length;
+      const sz={h1:'18px',h2:'16px',h3:'14px'}[tag];
+      out+=`<${tag} style="font-size:${sz};font-weight:700;margin:14px 0 6px;color:var(--text-primary)">${heading[2]}</${tag}>`;
+      continue;
+    }
+    const tblRow=ln.match(/^\|(.+)\|$/);
+    if(tblRow){
+      const cells=tblRow[1].split('|').map(c=>c.trim());
+      if(cells.every(c=>/^[\-:]+$/.test(c))){continue;}
+      if(!inTable){out+='<table style="border-collapse:collapse;margin:8px 0;width:100%">';inTable=true;}
+      const isHead=!inTable||i===0;
+      out+='<tr>'+cells.map(c=>`<td style="padding:4px 10px;border:1px solid var(--border);font-size:11px;${isHead?'font-weight:700;color:var(--text-secondary)':''}">${c}</td>`).join('')+'</tr>';
+      continue;
+    }
+    if(inTable){out+='</table>';inTable=false;}
+    let processed=ln
+      .replace(/\*\*(.+?)\*\*/g,'<strong style="font-weight:700;color:var(--text-primary)">$1</strong>')
+      .replace(/\*(.+?)\*/g,'<em>$1</em>')
+      .replace(/`([^`]+)`/g,'<code style="font-family:var(--font-mono);font-size:11px;padding:1px 5px;border-radius:4px;background:var(--surface);border:1px solid var(--border)">$1</code>');
+    if(processed.match(/^\- /)){
+      out+=`<div style="padding:2px 0 2px 16px;text-indent:-12px">• ${processed.replace(/^\- /,'')}</div>`;
+    }else if(processed.trim()===''){
+      out+='<div style="margin:4px 0"></div>';
+    }else{
+      out+=`<p style="margin:2px 0;font-size:12px;line-height:1.7">${processed}</p>`;
+    }
+  }
+  if(inTable)out+='</table>';
+  return out;
+}
+
+// --- Toast ---
+function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=type+' show';setTimeout(()=>t.className='',2200)}
+
+// --- Theme ---
+let isLight=true;
+function toggleTheme(){
+  isLight=!isLight;
+  document.documentElement.classList.toggle('light',isLight);
+  document.body.classList.toggle('light',isLight);
+  localStorage.setItem('theme',isLight?'light':'dark');
+  const p=document.getElementById('theme-icon-path');
+  const l=document.getElementById('theme-label');
+  if(isLight){
+    p.setAttribute('d','M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 3.74l.71.71-3.53 3.53-1.77-1.77.71-.71 1.06 1.06 2.82-2.82zm3.76.34v2h3v-2h-3zm-10-2.06l.71-.71 3.53 3.53-.71.71-3.53-3.53zM11 20.45h2V17.5h-2v2.95zm-5.65-.05l1.79-1.8-1.41-1.41-1.79 1.79 1.41 1.42z');
+    l.textContent='Dark';
+  }else{
+    p.setAttribute('d','M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.71-2.82 2.86-4.9 2.86-3.14 0-5.7-2.56-5.7-5.7 0-2.08 1.15-3.92 2.86-4.9-.44-.06-.9-.1-1.36-.1z');
+    l.textContent='Light';
+  }
+}
+(function initTheme(){
+  const saved=localStorage.getItem('theme');
+  if(saved==='dark'){
+    isLight=false;
+    document.documentElement.classList.remove('light');
+    document.body.classList.remove('light');
+    const p=document.getElementById('theme-icon-path');
+    const l=document.getElementById('theme-label');
+    if(p)p.setAttribute('d','M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.71-2.82 2.86-4.9 2.86-3.14 0-5.7-2.56-5.7-5.7 0-2.08 1.15-3.92 2.86-4.9-.44-.06-.9-.1-1.36-.1z');
+    if(l)l.textContent='Light';
+  }
+})();
+
+// --- View Switch ---
+function switchView(v){
+  currentView=v;
+  if(v!=='dashboard')window._dashFilter='';
+  if(v!=='resources')window._resFilter='';
+  if(v!=='activity')window._actFilter='';
+  if(v!=='requirements')window._reqFilter='';
+  if(v!=='dashboard')window._qSelect='';
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===v));
+  renderView();
+}
+
+// --- Detail Panel ---
+function openDetail(title,html){
+  document.getElementById('detail-panel').classList.remove('wide');
+  document.getElementById('detail-panel').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><h2 style="margin:0">${title}</h2><div style="display:flex;gap:6px"><button class="btn btn-ghost" style="padding:4px 8px;font-size:10px" onclick="toggleDetailWide()" title="Toggle full-width view">⤢</button><button class="close-btn" onclick="closeDetail()">&times;</button></div></div><div id="detail-inner">${html}</div>`;
+  document.getElementById('detail-overlay').classList.add('open');
+  document.getElementById('detail-panel').classList.add('open');
+}
+function toggleDetailWide(){
+  document.getElementById('detail-panel').classList.toggle('wide');
+}
+function closeDetail(){
+  _activeOppId=null;
+  document.getElementById('detail-overlay').classList.remove('open');
+  document.getElementById('detail-panel').classList.remove('open','wide');
+}
+
+// --- Modal ---
+let modalType='';
+function openCreateModal(){
+  if(currentView==='activity'){openMeetingModal();return}
+  modalType=currentView==='clients'?'client':currentView==='opportunities'||currentView==='pipeline'?'opportunity':currentView==='resources'?'resource':'opportunity';
+  document.getElementById('modal-title').textContent=modalType==='opportunity'?'New Opportunity':modalType==='client'?'New Client':'New Resource';
+  document.getElementById('modal-body').innerHTML=modalType==='opportunity'?`
+    <div class="form-group"><label>Client</label><select id="m-client"><option value="" disabled selected>Select a client...</option>${(summaryData.clients||[]).map(c=>`<option value="${escAttr(c.name)}">${escHtml(c.name)}</option>`).join('')}</select></div>
+    <div class="form-group"><label>Opportunity Name</label><input id="m-name" placeholder="e.g. Data Platform"></div>
+    <div class="form-group"><label>Budget</label><input id="m-budget" placeholder="e.g. $320K"></div>
+    <div class="form-group"><label>Need</label><select id="m-need"><option value="AI Tokens">AI Tokens</option><option value="Cloud">Cloud</option></select></div>
+    <div class="form-group"><label>Timeline</label><input id="m-timeline" placeholder="e.g. 2026-Q3"></div>
+    <div class="form-group"><label>Stage</label><select id="m-stage"><option>Discovery</option><option>Proposal</option><option>Negotiation</option><option>Verbal Commit</option></select></div>
+    <div class="form-group"><label>Product</label><input id="m-product" placeholder="e.g. DataPlatform"></div>
+  `:modalType==='client'?`
+    <div class="form-group"><label>Customer Name</label><input id="m-cname" placeholder="e.g. AcornFin"></div>
+    <div class="form-group"><label>Industry</label><select id="m-industry"><option value="Tech">Tech</option><option value="Finance">Finance</option><option value="Healthcare">Healthcare</option><option value="Manufacturing">Manufacturing</option><option value="Media">Media</option><option value="Other">Other</option></select></div>
+    <div class="form-group"><label>Region</label><select id="m-region"><option value="APAC">APAC</option><option value="EMEA">EMEA</option><option value="Americas">Americas</option></select></div>
+    <div class="form-group"><label>Size</label><select id="m-size"><option value="Enterprise">Enterprise</option><option value="Mid-market">Mid-market</option><option value="SMB">SMB</option></select></div>
+    <div class="form-group"><label>Business Description</label><textarea id="m-business" rows="3" placeholder="Describe the customer's business..."></textarea></div>
+  `:`
+    <div class="form-group"><label>Category</label><input id="m-cat" placeholder="e.g. Pitch-Decks"></div>
+    <div class="form-group"><label>Title</label><input id="m-title" placeholder="e.g. Data Platform Overview"></div>
+    <div class="form-group"><label>Content (Markdown)</label><textarea id="m-content" rows="6"></textarea></div>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function openMeetingModal(){
+  modalType='meeting';
+  document.getElementById('modal-title').textContent='New Meeting Note';
+  document.getElementById('modal-body').innerHTML=`
+    <div class="form-group"><label>Opportunity</label>${(summaryData.opportunities||[]).filter(o=>!['Won','Lost'].includes(o.stage)).length?`<select id="m-opp"><option value="" disabled selected>Select opportunity...</option>${(summaryData.opportunities||[]).filter(o=>!['Won','Lost'].includes(o.stage)).map(o=>`<option value="${escAttr(o.id)}">${escHtml(o.client)} — ${escHtml(o.name)}</option>`).join('')}</select>`:`<div style="font-size:11px;color:var(--warning);padding:8px 0">No active opportunities — create a client and opportunity first</div>`}</div>
+    <div class="form-group"><label>Title</label><input id="m-mtitle" placeholder="e.g. Discovery Call with CTO"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="form-group"><label>Date</label><input type="text" id="m-mdate" placeholder="yyyy-mm-dd" pattern="\d{4}-\d{2}-\d{2}" value="${new Date().toISOString().split('T')[0]}"></div>
+      <div class="form-group"><label>Venue</label><select id="m-venue" onchange="document.getElementById('m-vdetail-wrap').style.display=this.value==='Physical'?'block':'none'"><option value="Online">Online</option><option value="Physical">Physical</option></select></div>
+    </div>
+    <div class="form-group" id="m-vdetail-wrap" style="display:none"><label>Venue Details</label><input id="m-vdetail" placeholder="e.g. Room 5A, Main Building"></div>
+    <div class="form-group"><label>Attendees</label><input id="m-attendees" placeholder="e.g. Sarah Chen (CTO), Mike Torres (VP Eng)"></div>
+    <div class="form-group"><label>Agenda</label><textarea id="m-agenda" rows="2" placeholder="One item per line"></textarea></div>
+    <div class="form-group"><label>Requirements</label>
+      <div id="m-req-list"></div>
+      <button class="btn btn-ghost" style="font-size:10px;padding:2px 8px;margin-top:4px" onclick="addReqRow()">+ Add Requirement</button>
+    </div>
+    <div class="form-group"><label>Questions & Answers</label>
+      <div id="m-qa-list"></div>
+      <button class="btn btn-ghost" style="font-size:10px;padding:2px 8px;margin-top:4px" onclick="addQARow()">+ Add Question</button>
+    </div>
+    <div class="form-group"><label>Risks & Mitigations</label>
+      <div id="m-risk-list"></div>
+      <button class="btn btn-ghost" style="font-size:10px;padding:2px 8px;margin-top:4px" onclick="addRiskRow()">+ Add Risk</button>
+    </div>
+    <div class="form-group"><label>Action Items</label>
+      <div id="m-action-list"></div>
+      <button class="btn btn-ghost" style="font-size:10px;padding:2px 8px;margin-top:4px" onclick="addActionRow()">+ Add Action</button>
+    </div>
+  `;
+  addQARow();addRiskRow();addActionRow();addReqRow();
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function addQARow(){
+  const c=document.getElementById('m-qa-list');
+  const i=c.children.length;
+  c.insertAdjacentHTML('beforeend',`<div style="display:grid;grid-template-columns:1fr 1fr auto;gap:6px;align-items:start;margin-bottom:6px"><input id="m-q-${i}" placeholder="Question" style="font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);color:var(--text-primary)"><input id="m-a-${i}" placeholder="Answer (optional)" style="font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);color:var(--text-primary)"><button style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;padding:4px" onclick="this.parentElement.remove()">&times;</button></div>`);
+}
+
+function addRiskRow(){
+  const c=document.getElementById('m-risk-list');
+  const i=c.children.length;
+  c.insertAdjacentHTML('beforeend',`<div style="display:grid;grid-template-columns:1fr 1fr auto;gap:6px;align-items:start;margin-bottom:6px"><input id="m-risk-${i}" placeholder="Risk" style="font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);color:var(--text-primary)"><input id="m-mit-${i}" placeholder="Mitigation (optional)" style="font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);color:var(--text-primary)"><button style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;padding:4px" onclick="this.parentElement.remove()">&times;</button></div>`);
+}
+
+function addActionRow(){
+  const c=document.getElementById('m-action-list');
+  const i=c.children.length;
+  c.insertAdjacentHTML('beforeend',`<div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:6px;align-items:start;margin-bottom:6px"><input id="m-act-${i}" placeholder="Task" style="font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);color:var(--text-primary)"><input id="m-owner-${i}" placeholder="Owner" style="font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);color:var(--text-primary)"><input type="text" id="m-due-${i}" placeholder="yyyy-mm-dd" pattern="\\d{4}-\\d{2}-\\d{2}" style="font-family:var(--font-mono);font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);color:var(--text-primary)"><button style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;padding:4px" onclick="this.parentElement.remove()">&times;</button></div>`);
+}
+function addReqRow(){
+  const c=document.getElementById('m-req-list');
+  const i=c.children.length;
+  c.insertAdjacentHTML('beforeend',`<div style="display:grid;grid-template-columns:2fr 1fr auto;gap:6px;align-items:start;margin-bottom:6px"><input id="m-req-${i}" placeholder="Requirement" style="font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);color:var(--text-primary)"><input type="text" id="m-rdue-${i}" placeholder="yyyy-mm-dd" pattern="\\d{4}-\\d{2}-\\d{2}" style="font-family:var(--font-mono);font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);color:var(--text-primary)"><button style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;padding:4px" onclick="this.parentElement.remove()">&times;</button></div>`);
+}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open')}
+
+async function submitCreate(){
+  if(modalType==='meeting'){
+    const oppSel=document.getElementById('m-opp');
+    const oppId=oppSel?oppSel.value:'';
+    if(!oppId)return showToast('Create a client and opportunity first','error');
+    const title=document.getElementById('m-mtitle').value.trim()||'Meeting';
+    const date=document.getElementById('m-mdate').value;
+    const attendees=document.getElementById('m-attendees').value.trim();
+    const venueType=document.getElementById('m-venue').value;
+    const venueDetail=document.getElementById('m-vdetail')?.value?.trim()||'';
+    const agenda=document.getElementById('m-agenda').value.split('\n').map(l=>l.trim()).filter(l=>l);
+    const requirements=[];
+    document.querySelectorAll('#m-req-list > div').forEach(r=>{
+      const req=r.querySelector('input[id^="m-req-"]');
+      const due=r.querySelector('input[id^="m-rdue-"]');
+      if(req&&req.value.trim())requirements.push({text:req.value.trim(),status:'Open',due:due?due.value:''});
+    });
+    const questions=[];
+    document.querySelectorAll('#m-qa-list > div').forEach(r=>{
+      const q=r.querySelector('input[id^="m-q-"]');
+      const a=r.querySelector('input[id^="m-a-"]');
+      if(q&&q.value.trim())questions.push({question:q.value.trim(),answer:a?a.value.trim():''});
+    });
+    const risks=[];
+    document.querySelectorAll('#m-risk-list > div').forEach(r=>{
+      const rk=r.querySelector('input[id^="m-risk-"]');
+      const mt=r.querySelector('input[id^="m-mit-"]');
+      if(rk&&rk.value.trim())risks.push({risk:rk.value.trim(),mitigation:mt?mt.value.trim():''});
+    });
+    const actionItems=[];
+    document.querySelectorAll('#m-action-list > div').forEach(r=>{
+      const act=r.querySelector('input[id^="m-act-"]');
+      const own=r.querySelector('input[id^="m-owner-"]');
+      const due=r.querySelector('input[id^="m-due-"]');
+      if(act&&act.value.trim())actionItems.push({text:act.value.trim(),owner:own?own.value.trim():'',due:due?due.value:''});
+    });
+    const body={title,date,attendees,venueType,venueDetail,agenda,requirements,questions,risks,actionItems};
+    const res=await apiPost(`/api/opportunities/${encodeURIComponent(oppId)}/meetings`,body);
+    if(res.error)return showToast(res.error,'error');
+    closeModal();await loadAll();renderView();showToast('Meeting note created');
+  }else if(modalType==='client'){
+    const body={name:document.getElementById('m-cname').value.trim(),industry:document.getElementById('m-industry').value,region:document.getElementById('m-region').value,size:document.getElementById('m-size').value,business:document.getElementById('m-business').value.trim()};
+    if(!body.name)return showToast('Client name required','error');
+    const res=await apiPost('/api/clients',body);
+    if(res.error)return showToast(res.error,'error');
+    closeModal();await loadAll();renderView();showToast('Client created');
+  }else if(modalType==='opportunity'){
+    const clientSel=document.getElementById('m-client');
+    const body={client:clientSel?clientSel.value:'',name:document.getElementById('m-name').value.trim(),budget:document.getElementById('m-budget').value.trim(),need:document.getElementById('m-need').value,targetClose:document.getElementById('m-timeline').value.trim(),stage:document.getElementById('m-stage').value,product:document.getElementById('m-product').value.trim()};
+    if(!body.client||!body.name)return showToast('Select a client and enter a name','error');
+    const res=await apiPost('/api/opportunities',body);
+    if(res.error)return showToast(res.error,'error');
+    closeModal();await loadAll();renderView();showToast('Opportunity created');
+  }else{
+    const body={category:document.getElementById('m-cat').value.trim(),title:document.getElementById('m-title').value.trim(),content:document.getElementById('m-content').value.trim()};
+    if(!body.category||!body.title)return showToast('Category and title required','error');
+    const res=await apiPost('/api/resources',body);
+    if(res.error)return showToast(res.error,'error');
+    closeModal();await loadAll();renderView();showToast('Resource created');
+  }
+}
+
+// --- Radar Chart SVG Helper ---
+function radarSVG(dims,values,maxR,color,strokeOnly){
+  const n=dims.length,step=Math.PI*2/n,cx=maxR+8,cy=maxR+8;
+  const rings=[0.25,0.5,0.75,1.0];
+  let svg=`<svg width="${(maxR+8)*2}" height="${(maxR+8)*2}" viewBox="0 0 ${(maxR+8)*2} ${(maxR+8)*2}" style="overflow:visible">`;
+  rings.forEach(r=>{
+    const pts=[];
+    for(let i=0;i<n;i++){const a=-Math.PI/2+step*i;pts.push(`${cx+maxR*r*Math.cos(a)},${cy+maxR*r*Math.sin(a)}`)}
+    svg+=`<polygon points="${pts.join(' ')}" fill="none" stroke="var(--border)" stroke-width="0.5" opacity=".5"/>`;
+  });
+  for(let i=0;i<n;i++){const a=-Math.PI/2+step*i;svg+=`<line x1="${cx}" y1="${cy}" x2="${cx+maxR*Math.cos(a)}" y2="${cy+maxR*Math.sin(a)}" stroke="var(--border)" stroke-width="0.5" opacity=".4"/>`}
+  const fillPts=[];
+  for(let i=0;i<n;i++){const a=-Math.PI/2+step*i;const v=Math.min(values[i]||0,1);fillPts.push(`${cx+maxR*v*Math.cos(a)},${cy+maxR*v*Math.sin(a)}`)}
+  if(!strokeOnly){
+    svg+=`<polygon points="${fillPts.join(' ')}" fill="${color}22" stroke="${color}" stroke-width="1.5" opacity=".9"/>`;
+  }else{
+    svg+=`<polygon points="${fillPts.join(' ')}" fill="none" stroke="${color}" stroke-width="1.5" stroke-dasharray="3 2" opacity=".7"/>`;
+  }
+  for(let i=0;i<n;i++){const a=-Math.PI/2+step*i;const v=Math.min(values[i]||0,1);const dotColor=(v>0.6)?'var(--danger)':(v>0.3)?'var(--warning)':'var(--success)';svg+=`<circle cx="${cx+maxR*v*Math.cos(a)}" cy="${cy+maxR*v*Math.sin(a)}" r="2.5" fill="${dotColor}"/>`}
+  for(let i=0;i<n;i++){const a=-Math.PI/2+step*i;const lbl=maxR+20;const tx=cx+lbl*Math.cos(a);const ty=cy+lbl*Math.sin(a);const anchor=Math.abs(a)<0.3?'middle':(Math.cos(a)>0.1?'start':(Math.cos(a)<-0.1?'end':'middle'));svg+=`<text x="${tx}" y="${ty}" text-anchor="${anchor}" dominant-baseline="central" fill="var(--text-muted)" font-size="8" font-family="var(--font-body)">${dims[i]}</text>`}
+  svg+=`</svg>`;
+  return svg;
+}
+
+function riskLevel(m){
+  const critical=m.reqOverdue+m.reqGap+m.actDelayed+m.riskNoMit;
+  const caution=m.reqDueSoon;
+  const stale=0; // handled separately
+  if(critical>=2)return'red';
+  if(critical>=1||caution>=3)return'yellow';
+  return'green';
+}
+
+function riskScore(m){
+  const c=m.reqOverdue*4+m.reqGap*4+m.actDelayed*3+m.riskNoMit*4;
+  const w=m.reqDueSoon*2+m.reqFollow*1+m.actOpen*1;
+  return c+w;
+}
+
+// --- Data Load ---
+async function loadAll(){
+  summaryData=await api('/api/summary');
+}
+
+function renderView(){
+  const content=document.getElementById('content');
+  const renderers={dashboard:renderDashboard,clients:renderClients,opportunities:renderOpportunities,pipeline:renderPipeline,requirement:renderRequirement,activity:renderActivity,resources:renderResources,archive:renderArchive};
+  content.innerHTML=(renderers[currentView]||renderDashboard)();
+}
+
+function renderDashboard(){
+  const d=summaryData;
+  const opps=d.opportunities||[];
+  const today=new Date().toISOString().split('T')[0];
+  const staleDays=20;
+  const clientList=[...new Set(opps.map(o=>o.client))].sort();
+  const filterVal=window._dashFilter||'';
+
+  function oppMetrics(o){
+    let reqFollow=0,reqGap=0,reqOverdue=0,reqDueSoon=0,actOpen=0,actDelayed=0,riskNoMit=0;
+    (o.meetings||[]).forEach(m=>{
+      (m.requirements||[]).forEach(r=>{
+        const rs=typeof r==='string'?'Open':(r.status||'Open');
+        const rd=typeof r==='string'?'':(r.due||'');
+        if(rs==='Gap')reqGap++;
+        else if(rs!=='Confirmed')reqFollow++;
+        if(rd&&rd<today&&rs!=='Confirmed')reqOverdue++;
+        else if(rd&&rs!=='Confirmed'&&((new Date(rd)-new Date(today))/(86400000))<=7&&((new Date(rd)-new Date(today))/(86400000))>=0)reqDueSoon++;
+      });
+      (m.actionItems||[]).forEach(a=>{
+        const st=a.status||'Open';
+        if(st==='Open'||st==='In Progress')actOpen++;
+        if(st==='Delayed'||(st==='Open'&&a.due&&a.due<today))actDelayed++;
+      });
+      (m.risks||[]).forEach(rk=>{
+        if(!rk.mitigation||rk.mitigation==='(no mitigation yet)'||rk.mitigation.startsWith('(no'))riskNoMit++;
+      });
+    });
+    const total=reqFollow+reqGap+reqOverdue+reqDueSoon+actOpen+actDelayed+riskNoMit;
+    return{reqFollow,reqGap,reqOverdue,reqDueSoon,actOpen,actDelayed,riskNoMit,total};
+  }
+
+  function allActions(o){
+    const items=[];
+    (o.meetings||[]).forEach(m=>{
+      (m.actionItems||[]).forEach(a=>{
+        items.push({text:a.text,status:a.status||'Open',owner:a.owner||'',due:a.due||'',oppId:o.id,client:o.client,oppName:o.name});
+      });
+    });
+    return items;
+  }
+
+  function openQuestions(o){
+    const qs=[];
+    (o.meetings||[]).forEach(m=>{
+      (m.questions||[]).forEach(q=>{
+        const qt=typeof q==='string'?q:(q.question||q.text||'');
+        const qa=typeof q==='string'?'':(q.answer||'');
+        if(!qa||qa==='(open)')qs.push({text:qt,oppId:o.id,client:o.client,oppName:o.name});
+      });
+    });
+    return qs;
+  }
+
+  const filteredOpps=filterVal?opps.filter(o=>o.client===filterVal):opps;
+  const archive=d.archive||{};
+  const archiveWon=(archive.won||[]);
+  const archiveLost=(archive.lost||[]);
+  const fArchiveWon=filterVal?archiveWon.filter(a=>a.client===filterVal):archiveWon;
+  const fArchiveLost=filterVal?archiveLost.filter(a=>a.client===filterVal):archiveLost;
+  const fActive=filteredOpps.filter(o=>!['Won','Lost'].includes(o.stage));
+  const fClosed=filteredOpps.filter(o=>['Won','Lost'].includes(o.stage));
+  const fWon=fClosed.filter(o=>o.stage==='Won').length + fArchiveWon.length;
+  const fLost=fClosed.filter(o=>o.stage==='Lost').length + fArchiveLost.length;
+  const fWinRate=(fWon+fLost)>0?Math.round(fWon/(fWon+fLost)*100):0;
+  const fLoseRate=(fWon+fLost)>0?Math.round(fLost/(fWon+fLost)*100):0;
+  const fClients=new Set(fActive.map(o=>o.client));
+  const fStale=fActive.filter(o=>{const la=getLastActivityDate(o);return daysSince(la)>staleDays;});
+
+  let aReqFollow=0,aReqGap=0,aReqOverdue=0,aReqDueSoon=0,aActOpen=0,aActDelayed=0,aRiskNoMit=0;
+  fActive.forEach(o=>{const m=oppMetrics(o);aReqFollow+=m.reqFollow;aReqGap+=m.reqGap;aReqOverdue+=m.reqOverdue;aReqDueSoon+=m.reqDueSoon;aActOpen+=m.actOpen;aActDelayed+=m.actDelayed;aRiskNoMit+=m.riskNoMit;});
+
+  let html='';
+
+  // === ALERT SIGNAL STRIP ===
+  const criticals=[
+    {label:'Overdue Reqs',count:aReqOverdue,color:'var(--danger)'},
+    {label:'Delayed Actions',count:aActDelayed,color:'var(--danger)'},
+    {label:'Req Gaps',count:aReqGap,color:'var(--danger)'},
+    {label:'Unmitigated Risks',count:aRiskNoMit,color:'var(--danger)'},
+    {label:'Due Soon',count:aReqDueSoon,color:'var(--warning)'},
+    {label:'Open Actions',count:aActOpen,color:'var(--accent)'},
+    {label:'Stale Opps',count:fStale.length,color:'var(--danger)'},
+  ].filter(s=>s.count>0);
+
+  if(criticals.length){
+    const hasCritical=criticals.some(s=>s.color==='var(--danger)');
+    html+=`<div class="dash-alert-strip${hasCritical?' has-critical':''}">`;
+    criticals.forEach(s=>{
+      const isDanger=s.color==='var(--danger)';
+      html+=`<div class="dash-alert-item" style="background:${s.color}14;border:1px solid ${s.color}30;color:${s.color}">${isDanger?'<svg style="width:13px;height:13px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>':''}${s.count} ${s.label}</div>`;
+    });
+    html+=`</div>`;
+  }
+
+  // Filter chips
+  html+=`<div style="display:flex;gap:7px;align-items:center;margin-bottom:18px;flex-wrap:wrap">
+    <span style="${chipCls(!filterVal)}" onclick="window._dashFilter='';renderView()">All</span>
+    ${clientList.map(c=>`<span style="${chipCls(filterVal===c)}" onclick="window._dashFilter='${escAttr(c)}';renderView()">${escHtml(c)}</span>`).join('')}
+  </div>`;
+
+  // === STALE OPPORTUNITIES WARNING ===
+  if(fStale.length>0){
+    html+=`<div class="glass panel" style="margin-bottom:18px;border-left:3px solid var(--danger);padding:16px 20px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <svg style="width:18px;height:18px;color:var(--danger);flex-shrink:0" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+        <span style="font-size:14px;font-weight:700;color:var(--danger)">${fStale.length} Stale Opportunit${fStale.length>1?'ies':'y'}</span>
+        <span style="font-size:11px;color:var(--text-muted);margin-left:4px">No activity in ${staleDays}+ days — sales attention needed</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">`;
+    fStale.forEach(o=>{
+      const la=getLastActivityDate(o);
+      const idle=daysSince(la);
+      html+=`<div class="glass-sm opp-card" style="cursor:pointer;border-left:3px solid var(--danger)66" onclick="openOppDetail('${escAttr(o.id)}')">
+        <div style="padding:10px 12px">
+          <div style="font-size:13px;font-weight:600;color:var(--text-primary)">${escHtml(o.client)} <span style="color:var(--text-muted)">·</span> ${escHtml(o.name)}</div>
+          <div style="display:flex;justify-content:space-between;margin-top:5px">
+            <span style="font-size:10px;color:var(--text-muted)">${escHtml(o.stage||'')}</span>
+            <span style="font-family:var(--font-mono);font-size:10px;color:var(--danger);font-weight:700">${idle}d idle</span>
+          </div>
+        </div>
+      </div>`;
+    });
+    html+=`</div></div>`;
+  }
+
+  // KPI cards
+  html+=`<div class="kpi-grid">
+    <div class="glass kpi-card"><div class="label">Clients</div><div class="value">${fClients.size}</div><div class="delta">${fActive.length} active</div></div>
+    <div class="glass kpi-card"><div class="label">Win Rate</div><div class="value" style="color:${fWinRate>=40?'var(--success)':fWinRate>=20?'var(--warning)':'var(--danger)'}">${fWinRate}%</div><div class="delta">${fWon} won / ${fLost} lost</div></div>
+    <div class="glass kpi-card"><div class="label">Lose Rate</div><div class="value" style="color:${fLoseRate>50?'var(--danger)':fLoseRate>30?'var(--warning)':'var(--success)'}">${fLoseRate}%</div><div class="delta">${fLost} lost</div></div>
+    <div class="glass kpi-card"><div class="label">Stale</div><div class="value" style="color:${fStale.length>0?'var(--danger)':'var(--success)'}">${fStale.length}</div><div class="delta">>${staleDays}d idle</div></div>
+  </div>`;
+
+  // Quarterly target card with quarter switching
+  const qd=summaryData.quarterly||{};
+  const qTargets=qd.targets||[];
+  const qQuarters=qd.quarters||{};
+  const qSelected=window._qSelect||qd.current||'';
+  if(qTargets.length>0){
+    const qi=qQuarters[qSelected]||{target:0,won:0,pipeline:0,gap:0};
+    const qPct=qi.target>0?Math.min(Math.round(qi.won/qi.target*100),100):0;
+    const qGapColor=qi.gap>0?'var(--danger)':'var(--success)';
+    const qIdx=qTargets.findIndex(t=>t.quarter===qSelected);
+    const qPrev=qIdx>0?qTargets[qIdx-1].quarter:'';
+    const qNext=qIdx<qTargets.length-1?qTargets[qIdx+1].quarter:'';
+    html+=`<div class="glass panel" style="margin-bottom:18px;padding:16px 20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <h3 style="font-size:15px;font-weight:700;margin:0;display:flex;align-items:center;gap:6px"><svg style="width:16px;height:16px;color:var(--accent)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/></svg> ${qSelected} Target</h3>
+        <div style="display:flex;align-items:center;gap:6px">
+          ${qPrev?`<button style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-secondary);cursor:pointer;padding:2px 8px;font-size:11px;font-family:var(--font-mono)" onclick="window._qSelect='${escAttr(qPrev)}';renderView()">◄ ${qPrev}</button>`:''}
+          ${qNext?`<button style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-secondary);cursor:pointer;padding:2px 8px;font-size:11px;font-family:var(--font-mono)" onclick="window._qSelect='${escAttr(qNext)}';renderView()">${qNext} ►</button>`:''}
+          <button style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:14px;padding:2px 4px" onclick="editTargets()" title="Edit targets">✎</button>
+        </div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+          <span style="font-size:13px;font-weight:600;color:var(--text-primary)">Achieved <span style="color:var(--success)">${qi.won}M</span> / Target ${qi.target}M</span>
+          <span style="font-family:var(--font-mono);font-size:12px;font-weight:700;color:${qPct>=80?'var(--success)':qPct>=40?'var(--warning)':'var(--danger)'}">${qPct}%</span>
+        </div>
+        <div class="progress-bar" style="height:6px"><div class="progress-fill" style="width:${qPct}%;background:${qPct>=80?'var(--success)':qPct>=40?'var(--warning)':'var(--danger)'}"></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:11px">
+        <div style="text-align:center;padding:6px;border-radius:var(--radius-sm);background:var(--success)0d"><div style="font-weight:700;color:var(--success)">Won</div><div style="font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--text-primary)">${qi.won}M</div></div>
+        <div style="text-align:center;padding:6px;border-radius:var(--radius-sm);background:var(--warning)0d"><div style="font-weight:700;color:var(--warning)">Pipeline</div><div style="font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--text-primary)">${qi.pipeline}M</div></div>
+        <div style="text-align:center;padding:6px;border-radius:var(--radius-sm);background:${qi.gap>0?'var(--danger)0d':'var(--surface)'}"><div style="font-weight:700;color:${qGapColor}">Gap</div><div style="font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--text-primary)">${Math.abs(qi.gap)}M</div></div>
+      </div>
+    </div>`;
+  }
+
+  // === SECTION: Client Overview ===
+  const clientRows=[];
+  [...fClients].sort().forEach(c=>{
+    const cOpps=fActive.filter(o=>o.client===c);
+    const cPipeline=cOpps.reduce((sum,o)=>{let v=parseFloat(String(o.budget||'0').replace(/[^0-9.]/g,''))||0;const u=String(o.budget||'').match(/[KkMm]$/);if(u){if(u[0].toLowerCase()==='k')v*=1000;else if(u[0].toLowerCase()==='m')v*=1000000}return sum+v},0);
+    let cReqOpen=0,cReqGap=0,cReqOverdue=0,cActOpen=0,cActDelayed=0,cRiskNoMit=0,cOpenQ=0;
+    cOpps.forEach(o=>{
+      const m=oppMetrics(o);
+      cReqOpen+=m.reqFollow;cReqGap+=m.reqGap;cReqOverdue+=m.reqOverdue;
+      cActOpen+=m.actOpen;cActDelayed+=m.actDelayed;cRiskNoMit+=m.riskNoMit;
+      cOpenQ+=openQuestions(o).length;
+    });
+    const isStale=cOpps.some(o=>fStale.includes(o));
+    clientRows.push({client:c,count:cOpps.length,pipeline:cPipeline,stages:cOpps.map(o=>o.stage),reqOpen:cReqOpen,reqGap:cReqGap,reqOverdue:cReqOverdue,actOpen:cActOpen,actDelayed:cActDelayed,riskNoMit:cRiskNoMit,openQ:cOpenQ,stale:isStale});
+  });
+  if(clientRows.length){
+    html+=`<div class="glass panel" style="margin-bottom:16px;overflow-x:auto">
+      <h3 style="display:flex;align-items:center;gap:8px;font-size:15px"><svg style="width:16px;height:16px;color:var(--accent)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg> Client Overview</h3>
+      <table class="data-table" style="margin-top:10px;min-width:680px">
+        <tr><th>Client</th><th>Opps</th><th>Pipeline</th><th style="color:var(--text-secondary)">Open Reqs</th><th style="color:var(--danger)">Req Gaps</th><th style="color:var(--danger)">Overdue</th><th style="color:var(--accent)">Actions</th><th style="color:var(--danger)">Delayed</th><th style="color:var(--danger)">Risks</th><th style="color:var(--warning)">Open Qs</th><th>Status</th></tr>`;
+    clientRows.forEach(r=>{
+      const stageBadges=r.stages.map(s=>`<span style="font-size:9px;padding:1px 4px;border-radius:6px;background:${stageColor(s)}14;color:${stageColor(s)};margin-right:2px">${s}</span>`).join('');
+      const alertCount=r.reqGap+r.reqOverdue+r.actDelayed+r.riskNoMit;
+      const statusBadge=r.stale?'<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:var(--danger)18;color:var(--danger);font-weight:700">STALE</span>':alertCount>0?`<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:var(--warning)18;color:var(--warning);font-weight:600">${alertCount} issue${alertCount>1?'s':''}</span>`:'<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:var(--success)18;color:var(--success)">OK</span>';
+      html+=`<tr style="cursor:pointer" onclick="window._dashFilter='${escAttr(r.client)}';renderView()">
+        <td style="font-weight:700;color:var(--text-primary);white-space:nowrap">${escHtml(r.client)}</td>
+        <td><span style="font-family:var(--font-mono);font-size:12px;font-weight:600">${r.count}</span> ${stageBadges}</td>
+        <td style="font-family:var(--font-mono);font-size:12px;font-weight:600;color:var(--text-primary)">${fmt$(r.pipeline)}</td>
+        <td style="font-family:var(--font-mono);font-size:12px;color:var(--text-secondary)">${r.reqOpen||'-'}</td>
+        <td style="font-family:var(--font-mono);font-size:12px;color:${r.reqGap?'var(--danger)':'var(--text-muted)'};font-weight:${r.reqGap?700:400}">${r.reqGap||'-'}</td>
+        <td style="font-family:var(--font-mono);font-size:12px;color:${r.reqOverdue?'var(--danger)':'var(--text-muted)'};font-weight:${r.reqOverdue?700:400}">${r.reqOverdue||'-'}</td>
+        <td style="font-family:var(--font-mono);font-size:12px;color:var(--accent)">${r.actOpen||'-'}</td>
+        <td style="font-family:var(--font-mono);font-size:12px;color:${r.actDelayed?'var(--danger)':'var(--text-muted)'};font-weight:${r.actDelayed?700:400}">${r.actDelayed||'-'}</td>
+        <td style="font-family:var(--font-mono);font-size:12px;color:${r.riskNoMit?'var(--danger)':'var(--text-muted)'};font-weight:${r.riskNoMit?700:400}">${r.riskNoMit||'-'}</td>
+        <td style="font-family:var(--font-mono);font-size:12px;color:${r.openQ?'var(--warning)':'var(--text-muted)'}">${r.openQ||'-'}</td>
+        <td>${statusBadge}</td>
+      </tr>`;
+    });
+    html+=`</table></div>`;
+  }
+
+  // === SECTION: Next Action Timeline ===
+  const nextActions=fActive.map(o=>{
+    const due=o.nextActionDue||'';
+    const desc=(o.nextAction||'').replace(/by\s*\d{4}-\d{2}-\d{2}/,'').replace(/—\s*\[(Planned|In Progress|Done)\]/,'').replace(/\s*—\s*$/,'').trim();
+    const status=o.nextActionStatus||'Planned';
+    return{id:o.id,client:o.client,name:o.name,stage:o.stage,due,desc,status,full:o.nextAction||'',prob:parseInt(String(o.probability||'0').replace('%',''))||0,close:o.targetClose||''};
+  }).filter(a=>a.due).sort((a,b)=>a.due.localeCompare(b.due));
+
+  const overdueActions=nextActions.filter(a=>a.due<today);
+  const dueSoonActions=nextActions.filter(a=>a.due>=today&&((new Date(a.due)-new Date(today))/(86400000))<=14);
+  const laterActions=nextActions.filter(a=>a.due>=today&&((new Date(a.due)-new Date(today))/(86400000))>14);
+
+  if(nextActions.length){
+    html+=`<div class="glass panel" style="margin-bottom:16px">
+      <h3 style="display:flex;align-items:center;gap:8px;font-size:15px"><svg style="width:17px;height:17px;color:var(--accent)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Next Actions</h3>
+      <div style="display:flex;flex-direction:column;gap:4px;margin-top:12px">`;
+
+    const renderAction=(a,cardCls)=>{
+      const overdue=a.due<today;
+      const days=a.due<today?Math.abs(Math.round((new Date(today)-new Date(a.due))/(86400000))):Math.round((new Date(a.due)-new Date(today))/(86400000));
+      const dayLabel=overdue?`${days}d overdue`:`${days}d left`;
+      const dayColor=overdue?'var(--danger)':days<=3?'var(--danger)':days<=7?'var(--warning)':'var(--text-muted)';
+      const sc=stageColor(a.stage);
+      const probBadge=a.prob?`<span style="font-family:var(--font-mono);font-size:11px;padding:2px 7px;border-radius:8px;background:${a.prob>=60?'var(--success)':a.prob>=30?'var(--warning)':'var(--danger)'}18;color:${a.prob>=60?'var(--success)':a.prob>=30?'var(--warning)':'var(--danger)'}">${a.prob}%</span>`:'';
+      const statusBadge=a.status?`<span class="status-badge" style="font-size:9px;padding:1px 6px;border-radius:8px;${a.status==='Done'?'background:var(--success)14;color:var(--success);border:1px solid var(--success)25':a.status==='In Progress'?'background:var(--warning)14;color:var(--warning);border:1px solid var(--warning)25':'background:var(--accent)0d;color:var(--accent);border:1px solid var(--accent)20'}">${escHtml(a.status)}</span>`:'';
+      html+=`<div class="dash-action-card ${cardCls}" onclick="openOppDetail('${escAttr(a.id)}')">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                <span style="font-size:14px;font-weight:700;color:var(--text-primary)">${escHtml(a.client)}</span>
+                <span style="color:var(--text-muted);font-size:12px">/ ${escHtml(a.name)}</span>
+                <span class="status-badge" style="background:${sc}14;color:${sc};border:1px solid ${sc}25;font-size:10px">${a.stage}</span>
+                ${probBadge}
+                ${statusBadge}
+              </div>
+              <div style="font-size:13px;color:var(--text-secondary);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(a.desc||a.full)}</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0">
+            <span style="font-family:var(--font-mono);font-size:13px;color:${dayColor};${overdue?'font-weight:700':''}">${fmtDate(a.due)}</span>
+            <span style="font-size:11px;color:${dayColor}">${dayLabel}</span>
+          </div>
+        </div>
+      </div>`;
+    };
+
+    if(overdueActions.length){
+      html+=`<div style="font-size:11px;font-weight:700;color:var(--danger);text-transform:uppercase;letter-spacing:.8px;padding:6px 0 2px">Overdue (${overdueActions.length})</div>`;
+      overdueActions.forEach(a=>renderAction(a,'overdue'));
+    }
+    if(dueSoonActions.length){
+      html+=`<div style="font-size:11px;font-weight:700;color:var(--warning);text-transform:uppercase;letter-spacing:.8px;padding:6px 0 2px">Due Soon (${dueSoonActions.length})</div>`;
+      dueSoonActions.forEach(a=>renderAction(a,'due-soon'));
+    }
+    if(laterActions.length){
+      html+=`<div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;padding:6px 0 2px">Upcoming (${laterActions.length})</div>`;
+      laterActions.forEach(a=>renderAction(a,'upcoming'));
+    }
+
+    html+=`</div></div>`;
+  }
+
+  // === SECTION: Issues Needing Attention (Combined) ===
+  const allOpenActions=[];
+  fActive.forEach(o=>{
+    allActions(o).filter(a=>a.status==='Open'||a.status==='In Progress').forEach(a=>{
+      let overdueDays=0;
+      if(a.due){
+        const diff=Math.round((new Date(today)-new Date(a.due))/(86400000));
+        if(diff>0)overdueDays=diff;
+      }
+      allOpenActions.push({text:a.text,status:a.status,owner:a.owner,due:a.due,overdueDays,prob:parseInt(String(o.probability||'0').replace('%',''))||0,stage:o.stage,client:o.client,oppId:o.id});
+    });
+  });
+  allOpenActions.sort((a,b)=>{
+    if(a.overdueDays!==b.overdueDays)return b.overdueDays-a.overdueDays;
+    if(a.due&&b.due)return a.due.localeCompare(b.due);
+    return 0;
+  });
+
+  const allDelayedItems=[];
+  fActive.forEach(o=>{
+    allActions(o).filter(a=>a.status==='Delayed').forEach(a=>{
+      let overdueDays=0;
+      if(a.due){
+        const diff=Math.round((new Date(today)-new Date(a.due))/(86400000));
+        if(diff>0) overdueDays=diff;
+      }
+      if(overdueDays===0){
+        const fallback=o.updated||'';
+        if(fallback) overdueDays=Math.max(1,Math.round((new Date(today)-new Date(fallback))/(86400000)));
+        else overdueDays=1;
+      }
+      allDelayedItems.push({text:a.text,owner:a.owner,due:a.due,overdueDays,prob:parseInt(String(o.probability||'0').replace('%',''))||0,stage:o.stage,client:o.client,oppId:o.id});
+    });
+  });
+  allDelayedItems.sort((a,b)=>b.overdueDays-a.overdueDays);
+
+  const allOpenQs=[];
+  fActive.forEach(o=>{openQuestions(o).forEach(q=>allOpenQs.push({...q,stage:o.stage}))});
+
+  const hasIssues=allDelayedItems.length||allOpenQs.length||allOpenActions.length;
+
+  if(hasIssues){
+    const hasCritical=allDelayedItems.length>0;
+    const issueBorder=hasCritical?'rgba(239,68,68,0.15)':'rgba(251,191,36,0.12)';
+    html+=`<div class="glass panel dash-issues-panel" style="margin-bottom:16px;border:1px solid ${issueBorder}">
+      <h3 style="display:flex;align-items:center;gap:8px;font-size:15px;color:${hasCritical?'var(--danger)':'var(--warning)'}"><svg style="width:17px;height:17px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Action Items & Issues</h3>
+      <div style="margin-top:10px">`;
+
+    if(allDelayedItems.length){
+      html+=`<div style="font-size:11px;font-weight:700;color:var(--danger);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Delayed Actions (${allDelayedItems.length})</div>`;
+      allDelayedItems.forEach(a=>{
+        const sc=stageColor(a.stage||'');
+        html+=`<div class="issue-row" onclick="openOppDetail('${escAttr(a.oppId)}')">
+          <span class="issue-type" style="background:var(--danger)14;color:var(--danger);border:1px solid var(--danger)30">DELAYED</span>
+          <span style="font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--danger);min-width:44px;flex-shrink:0">${a.overdueDays}d</span>
+          <span style="flex:1;font-size:13px;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(a.text)}</span>
+          ${a.owner?`<span style="font-size:12px;color:var(--text-muted);flex-shrink:0">${escHtml(a.owner)}</span>`:''}
+          <span style="font-size:12px;color:var(--text-muted);flex-shrink:0">${escHtml(a.client)}</span>
+        </div>`;
+      });
+    }
+
+    if(allOpenQs.length){
+      html+=`<div style="font-size:11px;font-weight:700;color:var(--warning);text-transform:uppercase;letter-spacing:.5px;margin:${allDelayedItems.length?'12':'0'}px 0 6px 0">Open Questions (${allOpenQs.length})</div>`;
+      allOpenQs.forEach(q=>{
+        html+=`<div class="issue-row" onclick="openOppDetail('${escAttr(q.oppId)}')">
+          <span class="issue-type" style="background:var(--warning)14;color:var(--warning);border:1px solid var(--warning)30">QUESTION</span>
+          <span style="flex:1;font-size:13px;color:var(--text-secondary)">${escHtml(q.text)}</span>
+          <span style="font-size:12px;color:var(--text-muted);flex-shrink:0">${escHtml(q.client)}</span>
+        </div>`;
+      });
+    }
+
+    if(allOpenActions.length){
+      const maxShow=8;
+      const shown=allOpenActions.slice(0,maxShow);
+      const remaining=allOpenActions.length-maxShow;
+      html+=`<div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin:${(allDelayedItems.length||allOpenQs.length)?'12':'0'}px 0 6px 0">Open Actions (${allOpenActions.length})</div>`;
+      shown.forEach(a=>{
+        const isOverdue=a.overdueDays>0;
+        const dueLabel=a.due?fmtDate(a.due):'';
+        const dueClr=isOverdue?'var(--danger)':'var(--text-muted)';
+        html+=`<div class="issue-row" onclick="openOppDetail('${escAttr(a.oppId)}')">
+          <span class="issue-type" style="background:var(--accent)14;color:var(--accent);border:1px solid var(--accent)30">${a.status==='In Progress'?'IN PROG':'OPEN'}</span>
+          ${isOverdue?`<span style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--danger);min-width:36px;flex-shrink:0">${a.overdueDays}d!</span>`:''}
+          <span style="flex:1;font-size:13px;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(a.text)}</span>
+          ${a.owner?`<span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${escHtml(a.owner)}</span>`:''}
+          ${dueLabel?`<span style="font-family:var(--font-mono);font-size:10px;color:${dueClr};flex-shrink:0">${dueLabel}</span>`:''}
+          <span style="font-size:12px;color:var(--text-muted);flex-shrink:0">${escHtml(a.client)}</span>
+        </div>`;
+      });
+      if(remaining>0){
+        html+=`<div style="font-size:11px;color:var(--text-muted);padding:4px 0;text-align:center">+${remaining} more action items</div>`;
+      }
+    }
+
+    html+=`</div></div>`;
+  }
+
+  // === 3-column grid: Pipeline | Risk Radar | Alerts ===
+  html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px">`;
+
+  // Pipeline stage
+  const stageData=['Discovery','Proposal','Negotiation','Verbal Commit'].map(s=>({
+    stage:s,count:fActive.filter(o=>o.stage===s).length,color:stageColor(s),
+    value:fActive.filter(o=>o.stage===s).reduce((sum,o)=>{
+      let v=parseFloat(String(o.budget||'0').replace(/[^0-9.]/g,''))||0;
+      const u=String(o.budget||'').match(/[KkMm]$/);
+      if(u){if(u[0].toLowerCase()==='k')v*=1000;else if(u[0].toLowerCase()==='m')v*=1000000}
+      return sum+v;
+    },0)
+  })).filter(s=>s.count>0);
+
+  if(stageData.length){
+    const maxCount=Math.max(...stageData.map(s=>s.count),1);
+    html+=`<div class="glass panel"><h3 style="font-size:15px">Pipeline</h3>
+      <div style="display:flex;flex-direction:column;gap:7px;margin-top:10px">`;
+    stageData.forEach(s=>{
+      const w=Math.max(Math.round(s.count/maxCount*100),10);
+      html+=`<div style="display:flex;align-items:center;gap:10px">
+        <span style="width:74px;font-size:12px;color:var(--text-secondary);text-align:right;flex-shrink:0">${s.stage}</span>
+        <div style="flex:1;height:24px;border-radius:4px;overflow:hidden;background:var(--surface)">
+          <div style="width:${w}%;height:100%;border-radius:4px;background:${s.color};display:flex;align-items:center;justify-content:center">
+            <span style="font-family:var(--font-mono);font-size:12px;font-weight:700;color:#fff">${s.count}</span>
+          </div>
+        </div>
+        <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);flex-shrink:0">${fmt$(s.value*1000)}</span>
+      </div>`;
+    });
+    html+=`</div></div>`;
+  }else{
+    html+=`<div class="glass panel" style="text-align:center;padding:32px"><div style="font-size:13px;color:var(--text-muted)">No active pipeline</div></div>`;
+  }
+
+  // Risk Radar
+  const radarDims=['Reqs','Gap','Overdue','Due','Actions','Delayed','Risks'];
+  const radarKeys=['reqFollow','reqGap','reqOverdue','reqDueSoon','actOpen','actDelayed','riskNoMit'];
+  const oppColors=['#6366F1','#3B82F6','#8B5CF6','#F59E0B','#10B981'];
+  const maxVals=radarKeys.map(k=>Math.max(...fActive.map(o=>oppMetrics(o)[k]),1));
+
+  if(fActive.length>0){
+    const maxR=56;
+    const oppRadarData=fActive.map((o,idx)=>{
+      const m=oppMetrics(o);
+      return{
+        id:o.id,client:o.client,name:o.name,
+        values:radarKeys.map((k,i)=>Math.min(m[k]/maxVals[i],1)),
+        color:oppColors[idx%oppColors.length],
+        level:riskLevel(m),
+        score:riskScore(m)
+      };
+    });
+
+    oppRadarData.sort((a,b)=>a.score-b.score);
+
+    const n=7,step=Math.PI*2/n,cx=140,cy=130;
+    const rings=[0.25,0.5,0.75,1.0];
+    const svgW=320,svgH=300;
+    let svg=`<svg width="100%" viewBox="0 0 ${svgW} ${svgH}" style="max-width:${svgW}px;display:block">`;
+    // zone backgrounds: green inner, yellow mid, red outer
+    const zoneColors=['#22C55E08','#FBBF2408','#EF444408'];
+    const zoneRadii=[0.35,0.7,1.0];
+    zoneRadii.forEach((zr,zi)=>{
+      const pts=[];
+      for(let i=0;i<n;i++){const a=-Math.PI/2+step*i;pts.push(`${cx+maxR*zr*Math.cos(a)},${cy+maxR*zr*Math.sin(a)}`)}
+      svg+=`<polygon points="${pts.join(' ')}" fill="${zoneColors[zi]}"/>`;
+    });
+    rings.forEach(r=>{
+      const pts=[];
+      for(let i=0;i<n;i++){const a=-Math.PI/2+step*i;pts.push(`${cx+maxR*r*Math.cos(a)},${cy+maxR*r*Math.sin(a)}`)}
+      svg+=`<polygon points="${pts.join(' ')}" fill="none" stroke="var(--border)" stroke-width="0.5" opacity=".4"/>`;
+    });
+    for(let i=0;i<n;i++){const a=-Math.PI/2+step*i;svg+=`<line x1="${cx}" y1="${cy}" x2="${cx+maxR*Math.cos(a)}" y2="${cy+maxR*Math.sin(a)}" stroke="var(--border)" stroke-width="0.5" opacity=".3"/>`}
+    oppRadarData.forEach(od=>{
+      const pts=[];
+      for(let i=0;i<n;i++){const a=-Math.PI/2+step*i;const v=od.values[i];pts.push(`${cx+maxR*v*Math.cos(a)},${cy+maxR*v*Math.sin(a)}`)}
+      svg+=`<polygon points="${pts.join(' ')}" fill="${od.color}18" stroke="${od.color}" stroke-width="1.5" opacity=".8"/>`;
+      for(let i=0;i<n;i++){const a=-Math.PI/2+step*i;const v=od.values[i];if(v>0.01)svg+=`<circle cx="${cx+maxR*v*Math.cos(a)}" cy="${cy+maxR*v*Math.sin(a)}" r="2.5" fill="${od.color}"/>`}
+    });
+    for(let i=0;i<n;i++){const a=-Math.PI/2+step*i;const lbl=maxR+38;const tx=cx+lbl*Math.cos(a);const ty=cy+lbl*Math.sin(a);const anchor=Math.abs(Math.cos(a))<0.15?'middle':(Math.cos(a)>0?'start':'end');const dy=Math.sin(a)<-0.5?-3:Math.sin(a)>0.5?4:0;svg+=`<text x="${tx}" y="${ty+dy}" text-anchor="${anchor}" dominant-baseline="central" fill="var(--text-muted)" font-size="11" font-family="var(--font-body)">${radarDims[i]}</text>`}
+    svg+=`</svg>`;
+
+    html+=`<div class="glass panel">
+      <h3 style="display:flex;align-items:center;gap:8px;font-size:15px"><svg style="width:16px;height:16px;color:var(--danger)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Risk Radar</h3>
+      <div style="display:flex;gap:12px;align-items:flex-start;margin-top:8px;flex-wrap:wrap">
+        <div style="flex-shrink:0">${svg}</div>
+        <div style="display:flex;flex-direction:column;gap:5px;flex:1;min-width:130px">
+          ${oppRadarData.slice().reverse().map(od=>{
+            const m=fActive.find(o=>o.id===od.id);
+            const om=m?oppMetrics(m):{};
+            const worstKey=radarKeys.find((k,i)=>od.values[i]===Math.max(...od.values));
+            const worstVal=om[worstKey]||0;
+            const worstLabel=radarDims[radarKeys.indexOf(worstKey)];
+            return`<div style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 6px;border-radius:6px;transition:var(--transition)" onclick="openOppDetail('${escAttr(od.id)}')" onmouseenter="this.style.background='var(--surface)'" onmouseleave="this.style.background='transparent'">
+              <div class="traffic-light ${od.level}" title="${od.level==='red'?'Critical':od.level==='yellow'?'Caution':'Healthy'}">${od.level==='red'?'!':od.level==='yellow'?'~':'✓'}</div>
+              <span style="flex:1;font-size:12px;font-weight:600;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(od.client)}</span>
+              <span style="font-size:9px;color:var(--text-muted);white-space:nowrap">${worstVal} ${worstLabel}</span>
+              <span style="font-family:var(--font-mono);font-size:10px;color:${od.color}">${od.score}</span>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>`;
+  }else{
+    html+=`<div class="glass panel" style="text-align:center;padding:32px"><div style="font-size:13px;color:var(--text-muted)">No active opportunities</div></div>`;
+  }
+
+  // Alert donut
+  const totalAlerts=aReqFollow+aReqGap+aReqOverdue+aReqDueSoon+aActOpen+aActDelayed+aRiskNoMit;
+  if(totalAlerts>0){
+    const alertSlices=[
+      {label:'Reqs to follow',count:aReqFollow,color:'#3B82F6'},
+      {label:'Req Gaps',count:aReqGap,color:'#EF4444'},
+      {label:'Overdue Reqs',count:aReqOverdue,color:'#DC2626'},
+      {label:'Due Soon',count:aReqDueSoon,color:'#FBBF24'},
+      {label:'Open Actions',count:aActOpen,color:'#6366F1'},
+      {label:'Delayed Actions',count:aActDelayed,color:'#F97316'},
+      {label:'Unmitigated Risks',count:aRiskNoMit,color:'#B91C1C'},
+    ].filter(s=>s.count>0);
+
+    const r=62,c=2*Math.PI*r,cx=84,cy=84;
+    let cumPct=0,arcs='';
+    alertSlices.forEach(s=>{
+      const pct=s.count/totalAlerts;
+      const dash=c*pct;
+      const offset=-c*cumPct;
+      arcs+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.color}" stroke-width="22" stroke-dasharray="${dash} ${c-dash}" stroke-dashoffset="${offset}" opacity=".85"/>`;
+      cumPct+=pct;
+    });
+
+    html+=`<div class="glass panel">
+      <h3 style="display:flex;align-items:center;gap:8px;font-size:15px"><svg style="width:16px;height:16px;color:var(--accent)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> Alert Breakdown</h3>
+      <div style="display:flex;gap:16px;align-items:center;margin-top:12px;flex-wrap:wrap">
+        <div style="flex-shrink:0;position:relative">
+          <svg width="168" height="168" viewBox="0 0 168 168" style="transform:rotate(-90deg)">${arcs}</svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+            <span style="font-family:var(--font-mono);font-size:30px;font-weight:700;color:var(--text-primary)">${totalAlerts}</span>
+            <span style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">Alerts</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:130px">
+          ${alertSlices.map(s=>`<div style="display:flex;align-items:center;gap:8px">
+            <span style="width:9px;height:9px;border-radius:2px;background:${s.color};flex-shrink:0"></span>
+            <span style="font-size:13px;color:var(--text-secondary);flex:1">${s.label}</span>
+            <span style="font-family:var(--font-mono);font-size:14px;font-weight:600;color:${s.color}">${s.count}</span>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  }else{
+    html+=`<div class="glass panel" style="text-align:center;padding:28px">
+      <svg style="width:28px;height:28px;color:var(--success);margin-bottom:6px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <div style="font-size:13px;font-weight:600;color:var(--success)">All Clear</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:2px">No active alerts</div>
+    </div>`;
+  }
+
+  html+=`</div>`; // end 3-col grid
+
+  // === Closing Urgency (full-width compact row) ===
+  const quarterEnd={Q1:'-03-31',Q2:'-06-30',Q3:'-09-30',Q4:'-12-31'};
+  const closingOpps=fActive.map(o=>{
+    const close=o.targetClose||'';
+    const prob=parseInt(String(o.probability||'0').replace('%',''))||0;
+    let daysToClose=999;
+    if(close){
+      const m=close.match(/(\d{4})-Q(\d)/);
+      if(m) daysToClose=Math.round((new Date(m[1]+quarterEnd['Q'+m[2]])-new Date(today))/(86400000));
+    }
+    return{id:o.id,client:o.client,name:o.name,close,prob,daysToClose,stage:o.stage};
+  }).filter(o=>o.close).sort((a,b)=>a.daysToClose-b.daysToClose);
+
+  if(closingOpps.length){
+    html+=`<div class="glass panel" style="margin-bottom:16px">
+      <h3 style="display:flex;align-items:center;gap:8px;font-size:15px"><svg style="width:15px;height:15px;color:var(--warning)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Closing Urgency</h3>
+      <div style="display:flex;gap:12px;margin-top:10px;overflow-x:auto;padding-bottom:4px">`;
+    closingOpps.forEach(o=>{
+      const sc=stageColor(o.stage);
+      const pastTarget=o.daysToClose<0;
+      const urgent=o.daysToClose<=30;
+      const barColor=pastTarget?'var(--danger)':urgent?'var(--warning)':'var(--info)';
+      const daysLabel=pastTarget?Math.abs(o.daysToClose)+'d past':o.daysToClose+'d';
+      html+=`<div style="min-width:160px;flex:1;cursor:pointer;padding:10px 12px;border-radius:var(--radius-sm);background:var(--surface-2);border-left:3px solid ${barColor}" onclick="openOppDetail('${escAttr(o.id)}')">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:12px;font-weight:700;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(o.client)}</span>
+          <span style="font-family:var(--font-mono);font-size:11px;padding:1px 5px;border-radius:6px;background:${o.prob>=60?'var(--success)':o.prob>=30?'var(--warning)':'var(--danger)'}18;color:${o.prob>=60?'var(--success)':o.prob>=30?'var(--warning)':'var(--danger)'}">${o.prob}%</span>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(o.name)}</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
+          <div style="flex:1;height:5px;border-radius:3px;overflow:hidden;background:var(--surface)">
+            <div style="width:${Math.min(Math.abs(o.daysToClose)/365*100,100)}%;height:100%;border-radius:3px;background:${barColor};opacity:.6"></div>
+          </div>
+          <span style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:${barColor};flex-shrink:0">${daysLabel}</span>
+        </div>
+      </div>`;
+    });
+    html+=`</div></div>`;
+  }
+
+  // === SECTION: Opportunity Health — Issue Bars + Traffic Light Cards ===
+  const barOpps=fActive;
+  if(barOpps.length){
+    const hDims=['Open Reqs','Gaps','Overdue','Due Soon','Actions','Delayed','Risks'];
+    const hKeys=['reqFollow','reqGap','reqOverdue','reqDueSoon','actOpen','actDelayed','riskNoMit'];
+    const hMaxVals=hKeys.map(k=>Math.max(...barOpps.map(o=>oppMetrics(o)[k]),1));
+
+    html+=`<div style="margin-bottom:16px">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px"><svg style="width:18px;height:18px;color:var(--accent)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Opportunity Health</h3>`;
+
+    barOpps.sort((a,b)=>riskScore(oppMetrics(b))-riskScore(oppMetrics(a)));
+
+    barOpps.forEach(o=>{
+      const m=oppMetrics(o);
+      const sc=stageColor(o.stage);
+      const isStale=fStale.includes(o);
+      const probPct=parseInt(String(o.probability||'0').replace('%',''))||0;
+      const lvl=riskLevel(m);
+      const sc2=riskScore(m);
+      const fillColor=lvl==='red'?'#EF4444':lvl==='yellow'?'#FBBF24':'#22C55E';
+
+      // issue bar chart
+      const barH=13,gap=2,barW=150,svgW=barW+20,svgH=(hDims.length)*(barH+gap)+18;
+      let svg=`<svg width="100%" viewBox="0 0 ${svgW} ${svgH}" style="max-width:${svgW}px;display:block">`;
+      // health score bar
+      const scorePct=100-sc2;
+      const scoreW=scorePct/100*barW;
+      svg+=`<rect x="0" y="0" width="${barW}" height="10" rx="5" fill="var(--surface)" opacity=".6"/>`;
+      svg+=`<rect x="0" y="0" width="${scoreW}" height="10" rx="5" fill="${fillColor}" opacity=".45"/>`;
+      svg+=`<text x="${barW+3}" y="7" text-anchor="start" dominant-baseline="central" fill="${fillColor}" font-size="8" font-family="var(--font-mono)" font-weight="700">${scorePct}</text>`;
+      const offsetY=14;
+      hKeys.forEach((k,i)=>{
+        const val=m[k]||0;
+        const w=Math.min(val/hMaxVals[i],1)*barW;
+        const y=offsetY+i*(barH+gap);
+        const c=i===1||i===2||i===5||i===6?'var(--danger)':i===3?'var(--warning)':'var(--accent)';
+        svg+=`<rect x="0" y="${y}" width="${barW}" height="${barH}" rx="3" fill="var(--surface)" opacity=".4"/>`;
+        if(val>0)svg+=`<rect x="0" y="${y}" width="${w}" height="${barH}" rx="3" fill="${c}" opacity=".3"/>`;
+        svg+=`<text x="${val>0?4:6}" y="${y+barH/2+1}" text-anchor="start" dominant-baseline="central" fill="${val>0?'var(--text-primary)':'var(--text-muted)'}" font-size="8" font-family="var(--font-body)">${val>0?val+' '+hDims[i]:hDims[i]}</text>`;
+      });
+      svg+=`</svg>`;
+
+      // collect risk details for expand
+      const criticalItems=[];
+      const cautionItems=[];
+      (o.meetings||[]).forEach(mt=>{
+        (mt.requirements||[]).forEach(r=>{
+          const rs=typeof r==='string'?'Open':(r.status||'Open');
+          const rd=typeof r==='string'?'':(r.due||'');
+          const rt=typeof r==='string'?r:r.text;
+          if(rs==='Gap')criticalItems.push({icon:'gap',text:rt,due:rd});
+          else if(rd&&rd<today&&rs!=='Confirmed')criticalItems.push({icon:'overdue',text:rt,due:rd});
+          else if(rd&&rs!=='Confirmed'&&((new Date(rd)-new Date(today))/(86400000))<=7&&((new Date(rd)-new Date(today))/(86400000))>=0)cautionItems.push({icon:'soon',text:rt,due:rd});
+        });
+        (mt.actionItems||[]).forEach(a=>{
+          if(a.status==='Delayed')criticalItems.push({icon:'delayed',text:a.text,due:a.due||'',owner:a.owner||''});
+        });
+        (mt.risks||[]).forEach(rk=>{
+          if(!rk.mitigation||rk.mitigation==='(no mitigation yet)'||rk.mitigation.startsWith('(no'))criticalItems.push({icon:'risk',text:rk.risk});
+        });
+      });
+
+      const levelLabel=lvl==='red'?'Critical':lvl==='yellow'?'Caution':'Healthy';
+      const levelDesc=lvl==='red'?'Immediate attention needed':lvl==='yellow'?'Monitor closely':'On track';
+      const issueCount=criticalItems.length+cautionItems.length;
+
+      html+=`<div class="health-card ${lvl}" onclick="this.classList.toggle('open');event.stopPropagation()" style="position:relative">
+        <div style="display:flex;gap:14px;align-items:center">
+          <div style="flex-shrink:0">
+            <div class="traffic-light ${lvl}" title="${levelLabel}">${lvl==='red'?'!':lvl==='yellow'?'~':'✓'}</div>
+          </div>
+          <div style="flex-shrink:0;min-width:170px">
+            <div style="font-size:9px;color:var(--text-muted);margin-bottom:3px;font-family:var(--font-mono)">${hDims.join('  ')}</div>
+            ${svg}
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+              ${isStale?'<svg style="width:13px;height:13px;color:var(--danger);flex-shrink:0" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>':''}
+              <span style="font-size:14px;font-weight:700;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(o.client)}</span>
+              <span style="color:var(--text-muted);font-weight:300">/</span>
+              <span style="font-size:12px;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(o.name)}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:5px;flex-wrap:wrap">
+              <span class="status-badge" style="background:${sc}14;color:${sc};border:1px solid ${sc}25;font-size:10px">${o.stage}${o.daysInStage>0?` · ${o.daysInStage}d`:''}</span>
+              ${probPct?`<span style="font-family:var(--font-mono);font-size:10px;padding:1px 6px;border-radius:7px;background:${probPct>=60?'var(--success)':probPct>=30?'var(--warning)':'var(--danger)'}18;color:${probPct>=60?'var(--success)':probPct>=30?'var(--warning)':'var(--danger)'}">${probPct}%</span>`:''}
+              <span style="font-size:11px;font-weight:700;color:${fillColor}">${levelLabel}</span>
+              ${issueCount?`<span style="font-size:10px;padding:1px 6px;border-radius:8px;background:${fillColor}14;color:${fillColor}">${issueCount} issue${issueCount>1?'s':''}</span>`:''}
+              <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted)">Score ${sc2}</span>
+            </div>
+          </div>
+          <svg style="width:14px;height:14px;color:var(--text-muted);flex-shrink:0;transition:transform 200ms" class="expand-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="health-detail" onclick="event.stopPropagation()">
+          <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">`;
+
+      if(criticalItems.length){
+        html+=`<div style="margin-bottom:8px"><div style="font-size:11px;font-weight:700;color:var(--danger);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;display:flex;align-items:center;gap:5px"><svg style="width:12px;height:12px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Critical (${criticalItems.length})</div>`;
+        criticalItems.forEach(item=>{
+          const typeLabel={gap:'GAP',overdue:'OVERDUE',delayed:'DELAYED',risk:'RISK'}[item.icon]||'';
+          html+=`<div style="display:flex;gap:6px;align-items:center;padding:3px 0;border-bottom:1px solid var(--border)">
+            <span style="font-size:9px;padding:1px 5px;border-radius:6px;background:var(--danger)12;color:var(--danger);flex-shrink:0;font-weight:700">${typeLabel}</span>
+            <span style="flex:1;font-size:11px;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(item.text)}</span>
+            ${item.due?`<span style="font-family:var(--font-mono);font-size:9px;color:var(--danger);flex-shrink:0">${fmtDate(item.due)}</span>`:''}
+            ${item.owner?`<span style="font-size:9px;color:var(--text-muted);flex-shrink:0">${escHtml(item.owner)}</span>`:''}
+          </div>`;
+        });
+        html+=`</div>`;
+      }
+
+      if(cautionItems.length){
+        html+=`<div style="margin-bottom:0"><div style="font-size:11px;font-weight:700;color:var(--warning);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;display:flex;align-items:center;gap:5px"><svg style="width:12px;height:12px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Caution (${cautionItems.length})</div>`;
+        cautionItems.forEach(item=>{
+          html+=`<div style="display:flex;gap:6px;align-items:center;padding:3px 0;border-bottom:1px solid var(--border)">
+            <span style="font-size:9px;padding:1px 5px;border-radius:6px;background:var(--warning)12;color:var(--warning);flex-shrink:0;font-weight:700">DUE SOON</span>
+            <span style="flex:1;font-size:11px;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(item.text)}</span>
+            ${item.due?`<span style="font-family:var(--font-mono);font-size:9px;color:var(--warning);flex-shrink:0">${fmtDate(item.due)}</span>`:''}
+          </div>`;
+        });
+        html+=`</div>`;
+      }
+
+      if(!criticalItems.length&&!cautionItems.length){
+        html+=`<div style="font-size:11px;color:var(--text-muted);padding:4px 0">No active risk items</div>`;
+      }
+
+      html+=`<div style="margin-top:8px;text-align:right"><button style="font-size:10px;color:var(--accent);background:none;border:none;cursor:pointer;font-weight:600" onclick="event.stopPropagation();openOppDetail('${escAttr(o.id)}')">View full details →</button></div>`;
+
+      html+=`</div></div></div>`;
+    });
+
+    html+=`</div>`;
+  }
+
+  return html;
+}
+
+function getLastActivityDate(o){
+  const dates=[];
+  (o.meetings||[]).forEach(m=>{
+    if(m.fields?.Date)dates.push(m.fields.Date);
+  });
+  dates.sort((a,b)=>b.localeCompare(a));
+  return dates[0]||(o.created||'');
+}
+
+function renderPipeline(){
+  const opps=summaryData.opportunities||[];
+  const active=opps.filter(o=>!['Won','Lost'].includes(o.stage));
+  const stages=['Discovery','Proposal','Negotiation','Verbal Commit'];
+  let html='<div class="card-grid">';
+  stages.forEach(stage=>{
+    const stageOpps=active.filter(o=>o.stage===stage);
+    html+=`<div class="glass panel"><h3>${stage} <span style="font-size:11px;color:var(--text-muted);font-weight:400">(${stageOpps.length})</span></h3><div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">`;
+    stageOpps.forEach(o=>{
+      const sc=stageColor(o.stage);
+      html+=`<div class="glass-sm opp-card" onclick="openOppDetail('${escAttr(o.id)}')">
+        <div style="padding:10px 12px">
+          <div style="font-size:12px;font-weight:600;color:var(--text-primary)">${escHtml(o.client)}</div>
+          <div style="font-size:11px;color:var(--text-secondary)">${escHtml(o.name)}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+            <span style="font-family:var(--font-mono);font-size:13px;font-weight:700">${fmt$(o.budget)}</span>
+            <span style="font-size:10px;color:${sc}">${escHtml(o.need||'')}</span>
+          </div>
+          ${o.nextAction?`<div style="font-size:10px;color:var(--text-muted);margin-top:3px">Next: ${escHtml((o.nextAction||'').replace(/by\s*\d{4}-\d{2}-\d{2}/,'').replace(/—\s*\[(Planned|In Progress|Done)\]/,'').replace(/\s*—\s*$/,'').trim())}${o.nextActionDue?` · ${fmtDate(o.nextActionDue)}`:''}</div>`:''}
+        </div>
+      </div>`;
+    });
+    if(!stageOpps.length)html+=`<div style="padding:20px;text-align:center;font-size:11px;color:var(--text-muted)">No deals in this stage</div>`;
+    html+=`</div></div>`;
+  });
+  html+='</div>';
+  return html;
+}
+
+function renderOpportunities(){
+  const opps=summaryData.opportunities||[];
+  if(!opps.length)return'<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6z"/></svg><p>No opportunities yet</p></div>';
+  let html='<div class="card-grid">';
+  opps.forEach(o=>{
+    const sc=stageColor(o.stage);
+    const isClosed=['Won','Lost'].includes(o.stage);
+    html+=`<div class="glass opp-card" style="${isClosed?'opacity:0.6':''}" onclick="openOppDetail('${escAttr(o.id)}')">
+      <div class="card-header" style="padding:14px 16px 8px;border-bottom:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:13px;font-weight:700;color:var(--text-primary)">${escHtml(o.client)}</span>
+          <span class="status-badge" style="background:${sc}22;color:${sc};cursor:pointer" onclick="event.stopPropagation();cycleStage('${escAttr(o.id)}','${escAttr(o.stage)}')">${o.stage}${o.daysInStage>0?` (${o.daysInStage}d)`:''}</span>
+        </div>
+        <div style="font-size:11px;color:var(--text-secondary);margin-top:2px">${escHtml(o.name)}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-value">${fmt$(o.budget)}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+          <span style="font-size:10px;color:var(--accent)">${escHtml(o.need||'')}</span>
+          <span style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted)">${o.id}</span>
+        </div>
+        ${o.nextAction?`<div class="card-next">Next: ${escHtml((o.nextAction||'').replace(/by\s*\d{4}-\d{2}-\d{2}/,'').replace(/—\s*\[(Planned|In Progress|Done)\]/,'').replace(/\s*—\s*$/,'').trim())}${o.nextActionDue?` · ${fmtDate(o.nextActionDue)}`:''}</div>`:''}
+        ${o.product?`<div style="font-size:10px;color:var(--text-muted);margin-top:2px">Product: ${escHtml(o.product)}</div>`:''}
+      </div>
+    </div>`;
+  });
+  html+='</div>';
+  return html;
+}
+
+function renderClients(){
+  const cls=summaryData.clients||[];
+  if(!cls.length)return'<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><p>No clients yet — create one first</p></div>';
+  let html='<div class="card-grid">';
+  cls.forEach(c=>{
+    const oppCount=(summaryData.opportunities||[]).filter(o=>o.client===c.name).length;
+    html+=`<div class="glass opp-card" onclick="openClientDetail('${escAttr(c.id)}')">
+      <div class="card-header" style="padding:14px 16px 8px;border-bottom:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:13px;font-weight:700;color:var(--text-primary)">${escHtml(c.name)}</span>
+          <span style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono)">${oppCount} opp${oppCount!==1?'s':''}</span>
+        </div>
+        <div style="font-size:11px;color:var(--text-secondary);margin-top:2px">${escHtml(c.industry||'TBD')} · ${escHtml(c.region||'')} · ${escHtml(c.size||'')}</div>
+      </div>
+      <div class="card-body">
+        <div style="font-size:10px;color:var(--text-muted);margin-top:4px">${c.contacts.length} contact${c.contacts.length!==1?'s':''}</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);margin-top:6px">${c.id}</div>
+      </div>
+    </div>`;
+  });
+  html+='</div>';
+  return html;
+}
+
+function renderRequirement(){
+  const opps=summaryData.opportunities||[];
+  const filterVal=window._reqFilter||'';
+  const today=new Date().toISOString().split('T')[0];
+  const statusColors={Open:'var(--text-secondary)',Confirmed:'var(--success)',Gap:'var(--danger)'};
+  const statusOrder=['Open','Confirmed','Gap'];
+
+  // Filter chips
+  const clientList=[...new Set(opps.map(o=>o.client))].sort();
+  let html=`<div style="display:flex;gap:7px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+    <span style="${chipCls(!filterVal)}" onclick="window._reqFilter='';renderView()">All</span>
+    ${clientList.map(c=>`<span style="${chipCls(filterVal===c)}" onclick="window._reqFilter='${escAttr(c)}';renderView()">${escHtml(c)}</span>`).join('')}
+  </div>`;
+
+  const filteredOpps=filterVal?opps.filter(o=>o.client===filterVal):opps;
+
+  const grouped=[];
+  const seen={};
+  filteredOpps.forEach(o=>{
+    const meetings=(o.meetings||[]).map(m=>{
+      const reqs=(m.requirements||[]).map((r,i)=>{
+        const rt=typeof r==='string'?r:r.text;
+        const rs=typeof r==='string'?'Open':(r.status||'Open');
+        const rd=typeof r==='string'?'':(r.due||'');
+        const isOverdue=rd&&rd<today&&rs!=='Confirmed';
+        const isDueSoon=rd&&rs!=='Confirmed'&&!isOverdue&&((new Date(rd)-new Date(today))/(86400000))<=7&&((new Date(rd)-new Date(today))/(86400000))>=0;
+        return{text:rt,status:rs,due:rd,reqIdx:i,isOverdue,isDueSoon};
+      });
+      return{date:m.fields?.Date||'',title:m.fields?.Title||m.fields?.Opportunity||'',filename:m.filename,reqs};
+    }).filter(m=>m.reqs.length);
+    if(!meetings.length)return;
+    const key=o.client+'|'+o.name;
+    if(!(key in seen)){seen[key]=grouped.length;grouped.push({client:o.client,oppName:o.name,oppId:o.id,product:o.product||'',meetings:[]});}
+    grouped[seen[key]].meetings.push(...meetings);
+  });
+
+  if(!grouped.length)return html+'<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><p>No requirements tracked yet — add requirements in meeting notes</p></div>';
+
+  grouped.forEach(g=>{
+    let totalGap=0,totalConfirmed=0,totalOverdue=0,totalDueSoon=0;
+    g.meetings.forEach(m=>{m.reqs.forEach(r=>{if(r.status==='Gap')totalGap++;if(r.status==='Confirmed')totalConfirmed++;if(r.isOverdue)totalOverdue++;if(r.isDueSoon)totalDueSoon++;});});
+    html+=`<div class="glass panel" style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-primary)">${escHtml(g.client)} <span style="color:var(--text-secondary);font-weight:400">·</span> ${escHtml(g.oppName)}</div>
+          <div style="font-size:10px;color:var(--accent);margin-top:1px">${escHtml(g.product)}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          ${totalConfirmed?`<span style="font-size:9px;padding:2px 6px;border-radius:10px;background:var(--success)1a;color:var(--success);border:1px solid var(--success)44">${totalConfirmed} confirmed</span>`:''}
+          ${totalGap?`<span style="font-size:9px;padding:2px 6px;border-radius:10px;background:var(--danger)1a;color:var(--danger);border:1px solid var(--danger)44">${totalGap} gap${totalGap>1?'s':''}</span>`:''}
+          ${totalOverdue?`<span style="font-size:9px;padding:2px 6px;border-radius:10px;background:var(--danger)1a;color:var(--danger);border:1px solid var(--danger)44">${totalOverdue} overdue</span>`:''}
+          ${totalDueSoon?`<span style="font-size:9px;padding:2px 6px;border-radius:10px;background:var(--warning)1a;color:var(--warning);border:1px solid var(--warning)44">${totalDueSoon} due soon</span>`:''}
+        </div>
+      </div>`;
+
+    g.meetings.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(m=>{
+      html+=`<div style="background:var(--surface-2);border-radius:var(--radius);padding:10px 12px;margin-bottom:10px">
+        <div style="display:flex;gap:8px;align-items:baseline;margin-bottom:8px">
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);flex-shrink:0">${fmtDate(m.date)}</span>
+          <span style="font-size:12px;font-weight:600;color:var(--text-primary)">${escHtml(m.title)}</span>
+        </div>`;
+
+      if(m.reqs.length){
+        html+=`<div style="margin-bottom:6px"><div style="font-size:9px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Requirements</div>`;
+        m.reqs.forEach(r=>{
+          const clr=statusColors[r.status]||'var(--text-secondary)';
+          const nextIdx=(statusOrder.indexOf(r.status)+1)%statusOrder.length;
+          const next=statusOrder[nextIdx];
+          const dueClr=r.isOverdue?'var(--danger)':r.isDueSoon?'var(--warning)':'var(--text-muted)';
+          html+=`<div style="display:flex;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)">
+            <span data-opp="${escAttr(g.oppId)}" data-file="${escAttr(m.filename)}" data-idx="${r.reqIdx}" data-st="${r.status}" class="req-status-badge" style="font-size:9px;padding:2px 6px;border-radius:10px;background:${clr}1a;color:${clr};border:1px solid ${clr}44;cursor:pointer;user-select:none;white-space:nowrap;flex-shrink:0;min-width:56px;text-align:center" title="Click: ${next}">${r.status}</span>
+            <span style="flex:1;font-size:11px;color:var(--text-primary)">${escHtml(r.text)}</span>
+            ${r.due?`<span style="font-family:var(--font-mono);font-size:10px;color:${dueClr};flex-shrink:0;${r.isOverdue?'font-weight:700':''}">${fmtDate(r.due)}</span>`:''}
+          </div>`;
+        });
+        html+=`</div>`;
+      }
+
+      html+=`</div>`;
+    });
+
+    html+=`</div>`;
+  });
+  return html;
+}
+
+function renderActivity(){
+  const opps=summaryData.opportunities||[];
+  let activityTab=window._activityTab||'meetings';
+
+  let html=`<div style="display:flex;gap:8px;margin-bottom:16px;align-items:center">
+    <button class="btn ${activityTab==='meetings'?'btn-primary':'btn-ghost'}" onclick="window._activityTab='meetings';renderView()">Meeting Notes</button>
+    <button class="btn ${activityTab==='weekly'?'btn-primary':'btn-ghost'}" onclick="window._activityTab='weekly';renderView()">Weekly Reports</button>
+    <button class="btn ${activityTab==='prep'?'btn-primary':'btn-ghost'}" onclick="window._activityTab='prep';renderView()">Meeting Prep</button>
+    <div style="flex:1"></div>
+    ${activityTab==='meetings'?'<button class="btn btn-primary" style="font-size:11px" onclick="openMeetingModal()">+ New Meeting Note</button>':''}
+  </div>`;
+
+  if(activityTab==='meetings'){
+    const filterVal=window._actFilter||'';
+    const clientList=[...new Set(opps.map(o=>o.client))].sort();
+    // Filter chips
+    html+=`<div style="display:flex;gap:7px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+      <span style="${chipCls(!filterVal)}" onclick="window._actFilter='';renderView()">All</span>
+      ${clientList.map(c=>`<span style="${chipCls(filterVal===c)}" onclick="window._actFilter='${escAttr(c)}';renderView()">${escHtml(c)}</span>`).join('')}
+    </div>`;
+
+    const filteredOpps=filterVal?opps.filter(o=>o.client===filterVal):opps;
+    const grouped=[];
+    const seen={};
+    filteredOpps.forEach(o=>{
+      const meetings=(o.meetings||[]).slice().sort((a,b)=>(b.fields?.Date||'').localeCompare(a.fields?.Date||''));
+      if(!meetings.length)return;
+      const key=o.client+'|'+o.name+'|'+(o.product||'');
+      if(!(key in seen)){seen[key]=grouped.length;grouped.push({client:o.client,oppName:o.name,oppId:o.id,product:o.product||'',meetings:[]});}
+      grouped[seen[key]].meetings.push(...meetings.map(m=>({...m,oppId:o.id})));
+    });
+    if(!grouped.length){
+      html+=`<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg><p>No meeting notes yet — create your first meeting note</p></div>`;
+    }
+    grouped.forEach(g=>{
+      html+=`<div class="glass panel" style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--text-primary)">${escHtml(g.client)} <span style="color:var(--text-secondary);font-weight:400">·</span> ${escHtml(g.oppName)}</div>
+            <div style="font-size:10px;color:var(--accent);margin-top:1px">${escHtml(g.product)}</div>
+          </div>
+          <span style="font-size:10px;color:var(--text-muted)">${g.meetings.length} meeting${g.meetings.length>1?'s':''}</span>
+        </div>`;
+      g.meetings.forEach(m=>{
+        const title=m.fields?.Title||m.fields?.Opportunity||'';
+        html+=`<div style="background:var(--surface-2);border-radius:var(--radius);padding:10px 12px;margin-bottom:8px;cursor:pointer" onclick="openMeetingDetail('${escAttr(g.oppId)}','${escAttr(m.fields?.Date||'')}','${escAttr(m.filename||'')}')">
+          <div style="display:flex;justify-content:space-between;align-items:baseline">
+            <span style="font-size:12px;font-weight:600;color:var(--text-primary)">${escHtml(title)}</span>
+            <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);flex-shrink:0">${fmtDate(m.fields?.Date||'')}</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-secondary);margin-top:3px">${escHtml(m.fields?.Attendees||'')}</div>
+        </div>`;
+      });
+      html+=`</div>`;
+    });
+  } else if(activityTab==='weekly'){
+    const reports=summaryData.weeklyReports||[];
+    const today=new Date().toISOString().split('T')[0];
+    const weekAgo=new Date(Date.now()-7*86400000).toISOString().split('T')[0];
+    html+=`<div class="glass panel" style="margin-bottom:16px;display:flex;gap:10px;align-items:end;flex-wrap:wrap">
+      <div><span style="font-size:10px;color:var(--text-muted);display:block;margin-bottom:2px">Start Date</span><input type="date" id="wr-start" value="${weekAgo}" style="padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-xs);background:transparent;color:var(--text-primary);font-family:var(--font-mono);font-size:12px"></div>
+      <div><span style="font-size:10px;color:var(--text-muted);display:block;margin-bottom:2px">End Date</span><input type="date" id="wr-end" value="${today}" style="padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-xs);background:transparent;color:var(--text-primary);font-family:var(--font-mono);font-size:12px"></div>
+      <button class="btn btn-primary" style="padding:7px 16px;font-size:11px;white-space:nowrap" onclick="generateWeeklyReport()">Generate Weekly Report</button>
+    </div>`;
+
+    if(!reports.length){
+      html+=`<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg><p>No weekly reports yet — select a date range and generate one</p></div>`;
+    } else {
+      reports.forEach(r=>{
+        const isSalesReport=r.filename.startsWith('销售周报');
+        const badgeColor=isSalesReport?'var(--accent)':'var(--text-muted)';
+        const badgeBg=isSalesReport?'var(--accent)0d':'transparent';
+        const badge=isSalesReport?`<span style="display:inline-block;font-size:9px;padding:1px 6px;border-radius:6px;background:${badgeBg};color:${badgeColor};border:1px solid ${badgeColor}33;margin-right:8px;font-weight:700;letter-spacing:.3px">汇报版</span>`:'';
+        html+=`<div class="glass panel" style="margin-bottom:10px;cursor:pointer" onclick="openWeeklyReport('${escAttr(r.filename)}')">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px;font-weight:600;color:var(--text-primary)">${badge}${escHtml(r.title)}</span>
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted)">${escHtml(r.period||'')}</span>
+          </div>
+        </div>`;
+      });
+    }
+  } else if(activityTab==='prep'){
+    const briefOpps=opps.filter(o=>(o.briefings||[]).length>0);
+    if(!briefOpps.length){
+      html+=`<div class="empty-state"><p>No AI briefings yet — use meeting-prep to generate one</p></div>`;
+    } else {
+      briefOpps.forEach(o=>{
+        const briefings=o.briefings||[];
+        const latestBriefing=briefings[briefings.length-1];
+        const content=latestBriefing.content||"";
+        const hasRisks=(content.match(/## Unmitigated Risks/g)||[]).length>0;
+        const hasGaps=(content.match(/## Gap Requirements/g)||[]).length>0;
+        const riskLevel=(hasRisks&&hasGaps)?"High":(hasRisks||hasGaps)?"Medium":"Low";
+        const riskColor=riskLevel==="High"?"var(--danger)":riskLevel==="Medium"?"var(--warning)":"var(--success)";
+        const riskImpactText=riskLevel==="High"?"These issues significantly increase deal loss risk if unresolved":riskLevel==="Medium"?"Unresolved items may slow deal progress":"No critical blockers identified";
+
+        html+=`<div class="glass panel" style="margin-bottom:16px;padding:18px 20px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--text-primary)">${escHtml(o.client)} <span style="color:var(--text-secondary);font-weight:400">/</span> ${escHtml(o.name)}</div>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+                <span class="status-badge" style="background:${stageColor(o.stage)}18;color:${stageColor(o.stage)};font-size:10px;padding:2px 8px">${o.stage} ${o.daysInStage>0?"("+o.daysInStage+"d)":""}</span>
+                <span style="font-size:10px;color:var(--text-muted)">${escHtml(o.product||"")}</span>
+              </div>
+            </div>
+            <button style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:13px" onclick="deleteBriefing('${escAttr(o.id)}','${escAttr(latestBriefing.filename)}')" title="Remove briefing">&times;</button>
+          </div>
+          <div style="border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden">
+            <div style="padding:10px 14px;background:var(--surface);border-bottom:1px solid var(--border)">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="font-size:14px">&#10022;</span>
+                  <span style="font-size:12px;font-weight:700;color:var(--accent)">AI Briefing</span>
+                </div>
+                <span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;background:${riskColor}1a;color:${riskColor}">Deal Risk: ${riskLevel}</span>
+              </div>
+              <div style="font-size:10px;color:var(--danger);margin-top:4px">${riskImpactText}</div>
+            </div>
+            <div style="padding:10px 14px">
+              <div onclick="toggleBriefing(this)" style="cursor:pointer;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--accent)">
+                <span style="font-size:9px;color:var(--text-muted)">&#9658;</span> View Full Analysis
+              </div>
+              <div style="display:none;margin-top:8px;max-height:500px;overflow-y:auto">
+                <div class="markdown-body" style="font-size:11px;line-height:1.6;color:var(--text-secondary)">${md2html(content)}</div>
+              </div>
+            </div>
+          </div>`;
+
+        const meetings=(o.meetings||[]).filter(m=>!m.filename.startsWith("Briefing-"));
+        const nextMeeting=meetings.slice().sort((a,b)=>(b.fields?.Date||"").localeCompare(a.fields?.Date||""))[0];
+
+        if(nextMeeting){
+          const nmDate=nextMeeting.fields?.Date||"";
+          const nmTitle=nextMeeting.fields?.Title||nextMeeting.fields?.Opportunity||"";
+          const nmAttendees=nextMeeting.fields?.Attendees||"TBD";
+          const nmVenue=nextMeeting.fields?.Venue||"Online";
+          const nmAgenda=nextMeeting.agenda||[];
+
+          html+=`<div style="border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-top:14px">
+            <div style="padding:10px 14px;background:var(--surface);border-bottom:1px solid var(--border)">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:12px">&#128197;</span>
+                <span style="font-size:12px;font-weight:700;color:var(--text-primary)">Next Meeting</span>
+              </div>
+            </div>
+            <div style="padding:12px 14px">
+              <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:11px">
+                <span style="color:var(--text-muted);font-weight:600">Title</span>
+                <span style="color:var(--text-primary);font-weight:500">${escHtml(nmTitle)}</span>
+                <span style="color:var(--text-muted);font-weight:600">Date</span>
+                <span style="color:var(--text-primary);font-family:var(--font-mono)">${fmtDate(nmDate)}</span>
+                <span style="color:var(--text-muted);font-weight:600">Venue</span>
+                <span style="color:var(--text-primary)">${escHtml(nmVenue)}</span>
+                <span style="color:var(--text-muted);font-weight:600">Attendees</span>
+                <span style="color:var(--text-primary)">${escHtml(nmAttendees)}</span>
+              </div>
+              ${nmAgenda.length?`
+              <div style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px">
+                <div style="font-size:10px;font-weight:600;color:var(--text-muted);margin-bottom:4px">AGENDA</div>
+                ${nmAgenda.map((a,i)=>`<div style="font-size:11px;color:var(--text-secondary);padding:2px 0">${i+1}. ${escHtml(a)}</div>`).join("")}
+              </div>`:""}
+            </div>
+          </div>`;
+        }
+
+        html+=`</div>`;
+      });
+    }
+  
+}
+  return html;
+}
+
+function renderResources(){
+  const res=summaryData.resources||[];
+  const filterVal=window._resFilter||'';
+  let html='';
+
+  if(!res.length)return'<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><p>No resources yet</p></div>';
+
+  // Filter chips
+  const clientList=[...new Set(res.map(r=>r.client||'Other'))].sort();
+  html+=`<div style="display:flex;gap:7px;align-items:center;margin-bottom:18px;flex-wrap:wrap">
+    <span style="${chipCls(!filterVal)}" onclick="window._resFilter='';renderView()">All</span>
+    ${clientList.map(c=>`<span style="${chipCls(filterVal===c)}" onclick="window._resFilter='${escAttr(c)}';renderView()">${escHtml(c)}</span>`).join('')}
+  </div>`;
+
+  const filtered=filterVal?res.filter(r=>(r.client||'Other')===filterVal):res;
+
+  // Group by client
+  const byClient={};
+  filtered.forEach(r=>{
+    const c=r.client||'Other';
+    if(!byClient[c])byClient[c]=[];
+    byClient[c].push(r);
+  });
+
+  const sortedClients=Object.keys(byClient).sort((a,b)=>a==='Other'?1:b==='Other'?-1:a.localeCompare(b));
+
+  sortedClients.forEach(clientName=>{
+    const items=byClient[clientName];
+    // Sub-group by type
+    const byType={};
+    const typeOrder=['Clients','Opportunities','Meeting Notes'];
+    items.forEach(r=>{
+      const t=r.category||'Other';
+      if(!byType[t])byType[t]=[];
+      byType[t].push(r);
+    });
+
+    const typeColors={'Clients':'var(--accent)','Opportunities':'var(--info)','Meeting Notes':'var(--success)'};
+
+    html+=`<div class="glass panel" style="margin-bottom:14px">
+      <h3 style="font-size:15px">${escHtml(clientName)} <span style="font-size:11px;color:var(--text-muted);font-weight:400">(${items.length})</span></h3>`;
+
+    typeOrder.forEach(type=>{
+      if(!byType[type])return;
+      const typeItems=byType[type];
+      const color=typeColors[type]||'var(--text-secondary)';
+      html+=`<div style="margin-top:10px;margin-bottom:4px;font-size:11px;color:${color};font-weight:600;text-transform:uppercase;letter-spacing:.3px">${escHtml(type)} (${typeItems.length})</div>
+        <div class="card-grid" style="margin-top:4px">`;
+      typeItems.forEach(r=>{
+        const title=r.filename.replace('.md','');
+        const preview=escHtml(r.content.substring(0,150))+(r.content.length>150?'...':'');
+        const clickAction=type==='Meeting Notes'&&r.oppFolder
+          ?`onclick="openMeetingResource('${escAttr(r.oppFolder)}','${escAttr(r.filename)}')"`
+          :`onclick="openResourceDetail('${escAttr(r.category)}','${escAttr(r.filename)}')"`;
+        html+=`<div class="glass-sm opp-card" ${clickAction}>
+          <div style="padding:10px 12px">
+            <div style="font-size:11px;font-weight:600;color:var(--text-primary)">${escHtml(title)}</div>
+            <div style="font-size:9px;color:var(--text-muted);margin-top:3px;line-height:1.4">${preview}</div>
+          </div>
+        </div>`;
+      });
+      html+=`</div>`;
+    });
+
+    // Other resource types under this client
+    Object.keys(byType).forEach(type=>{
+      if(typeOrder.includes(type))return;
+      const typeItems=byType[type];
+      html+=`<div style="margin-top:10px;margin-bottom:4px;font-size:11px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.3px">${escHtml(type)} (${typeItems.length})</div>
+        <div class="card-grid" style="margin-top:4px">`;
+      typeItems.forEach(r=>{
+        html+=`<div class="glass-sm opp-card" onclick="openResourceDetail('${escAttr(r.category)}','${escAttr(r.filename)}')">
+          <div style="padding:10px 12px">
+            <div style="font-size:11px;font-weight:600;color:var(--text-primary)">${escHtml(r.filename.replace('.md',''))}</div>
+            <div style="font-size:9px;color:var(--text-muted);margin-top:3px">${escHtml(r.content.substring(0,120))}${r.content.length>120?'...':''}</div>
+          </div>
+        </div>`;
+      });
+      html+=`</div>`;
+    });
+
+    html+=`</div>`;
+  });
+
+  return html;
+}
+
+
+function renderArchive(){
+  const arc=summaryData.archive||{won:[],lost:[]};
+  const wonTotal=arc.won?arc.won.length:0;
+  const lostTotal=arc.lost?arc.lost.length:0;
+  const total=wonTotal+lostTotal;
+  const winRate=total>0?Math.round(wonTotal/total*100):0;
+  if(!total)return'<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.5-.17-.93-.46-1.27z"/></svg><p>No archived deals yet</p></div>';
+
+  // Collect all years across won+lost
+  const yearSet=new Set();
+  arc.won.forEach(a=>yearSet.add(a.year));
+  arc.lost.forEach(a=>yearSet.add(a.year));
+  const years=[...yearSet].sort((a,b)=>b.localeCompare(a));
+
+  // Top stats
+  let html=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px">
+    <div class="glass kpi-card"><div class="label">Won Deals</div><div class="value" style="color:var(--success)">${wonTotal}</div></div>
+    <div class="glass kpi-card"><div class="label">Lost Deals</div><div class="value" style="color:var(--danger)">${lostTotal}</div></div>
+    <div class="glass kpi-card"><div class="label">Win Rate</div><div class="value" style="color:${winRate>=50?'var(--success)':'var(--warning)'}">${winRate}%</div></div>
+  </div>`;
+
+  // By year sections
+  years.forEach(year=>{
+    const wonItems=(arc.won||[]).filter(a=>a.year===year);
+    const lostItems=(arc.lost||[]).filter(a=>a.year===year);
+    const yearTotal=wonItems.length+lostItems.length;
+    html+=`<div class="glass panel" style="margin-bottom:14px">
+      <h3 style="display:flex;align-items:center;gap:10px">${year} <span style="font-size:11px;color:var(--text-muted);font-weight:400">(${yearTotal} deals)</span>
+        <span style="font-size:10px;color:var(--success);font-weight:600">${wonItems.length} won</span>
+        <span style="font-size:10px;color:var(--danger);font-weight:600">${lostItems.length} lost</span>
+      </h3>`;
+
+    if(wonItems.length){
+      html+=`<div style="margin-top:10px;padding-left:8px;border-left:3px solid var(--success)">
+        <div style="font-size:12px;font-weight:700;color:var(--success);margin-bottom:6px">Won (${wonItems.length})</div>`;
+      const byClient={};
+      wonItems.forEach(a=>{if(!byClient[a.client])byClient[a.client]=[];byClient[a.client].push(a)});
+      Object.entries(byClient).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([client,items])=>{
+        html+=`<div style="font-size:11px;font-weight:600;color:var(--text-primary);margin-top:4px">${escHtml(client)}</div>`;
+        items.forEach(a=>{
+          const oppName=a.folder.replace(/^OPP-\d+-/,'').replace(/-/g,' ').replace(new RegExp('^'+a.client.replace(/\s/g,'')+'\\s*','i'),'').trim();
+          html+=`<div class="glass-sm" style="cursor:pointer;padding:6px 12px;margin:4px 0 4px 8px;border-radius:var(--radius-sm)" onclick="openArchiveOpp('${escAttr(a.folder)}','Won','${escAttr(year)}','${escAttr(a.client)}')">
+            <span style="font-size:12px;color:var(--text-primary)">${escHtml(oppName||a.folder)}</span>
+          </div>`;
+        });
+      });
+      html+=`</div>`;
+    }
+
+    if(lostItems.length){
+      html+=`<div style="margin-top:10px;padding-left:8px;border-left:3px solid var(--danger)">
+        <div style="font-size:12px;font-weight:700;color:var(--danger);margin-bottom:6px">Lost (${lostItems.length})</div>`;
+      const byClient={};
+      lostItems.forEach(a=>{if(!byClient[a.client])byClient[a.client]=[];byClient[a.client].push(a)});
+      Object.entries(byClient).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([client,items])=>{
+        html+=`<div style="font-size:11px;font-weight:600;color:var(--text-primary);margin-top:4px">${escHtml(client)}</div>`;
+        items.forEach(a=>{
+          const oppName=a.folder.replace(/^OPP-\d+-/,'').replace(/-/g,' ').replace(new RegExp('^'+a.client.replace(/\s/g,'')+'\\s*','i'),'').trim();
+          html+=`<div class="glass-sm" style="cursor:pointer;padding:6px 12px;margin:4px 0 4px 8px;border-radius:var(--radius-sm)" onclick="openArchiveOpp('${escAttr(a.folder)}','Lost','${escAttr(year)}','${escAttr(a.client)}')">
+            <span style="font-size:12px;color:var(--text-primary)">${escHtml(oppName||a.folder)}</span>
+          </div>`;
+        });
+      });
+      html+=`</div>`;
+    }
+
+    html+=`</div>`;
+  });
+
+  return html;
+}
+
+// --- Opp Detail ---
+function openOppDetail(id){
+  _activeOppId=id;
+  const o=summaryData.opportunities.find(x=>x.id===id);
+  if(!o)return;
+  const isClosed=['Won','Lost'].includes(o.stage);
+  let html='';
+  html+=`<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+    <span class="status-badge" style="background:${stageColor(o.stage)}22;color:${stageColor(o.stage)};cursor:pointer" onclick="cycleStage('${escAttr(o.id)}','${escAttr(o.stage)}')">${o.stage}${o.daysInStage>0?` (${o.daysInStage}d)`:''}</span>
+    <span style="font-size:11px;color:var(--text-muted)">${o.id} · Updated ${fmtDate(o.updated)}</span>
+    <div style="flex:1"></div>
+    ${!isClosed?`<button class="btn btn-primary" style="font-size:10px;padding:4px 10px;background:var(--success)" onclick="closeDeal('${escAttr(o.id)}','Won')">Win Deal</button>
+    <button class="btn btn-ghost" style="font-size:10px;padding:4px 10px;color:var(--danger);border:1px solid var(--danger)" onclick="closeDeal('${escAttr(o.id)}','Lost')">Lose Deal</button>`:''}
+  </div>`;
+  html+=`<div class="detail-section"><h4>Overview</h4><div class="detail-content">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><span style="font-size:10px;color:var(--text-muted)">Budget</span><div contenteditable="${!isClosed}" style="font-family:var(--font-mono);font-size:16px;font-weight:700" onblur="saveOppField('${escAttr(o.id)}','budget',this.textContent.trim())">${escHtml(o.budget||'TBD')}</div></div>
+      <div><span style="font-size:10px;color:var(--text-muted)">Need</span><div>${isClosed?escHtml(o.need||'-'):`<select onchange="saveOppField('${escAttr(o.id)}','need',this.value)" style="font-size:13px;font-weight:600;color:var(--accent);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);padding:2px 6px;cursor:pointer"><option value="AI Tokens" ${o.need==='AI Tokens'?'selected':''}>AI Tokens</option><option value="Cloud" ${o.need==='Cloud'?'selected':''}>Cloud</option></select>`}</div></div>
+      <div><span style="font-size:10px;color:var(--text-muted)">Timeline</span><div contenteditable="${!isClosed}" style="font-size:13px" onblur="saveOppField('${escAttr(o.id)}','targetClose',this.textContent.trim())">${escHtml(o.targetClose||'-')}</div></div>
+      <div><span style="font-size:10px;color:var(--text-muted)">Product</span><div contenteditable="${!isClosed}" style="font-size:13px" onblur="saveOppField('${escAttr(o.id)}','product',this.textContent.trim())">${escHtml(o.product||'-')}</div></div>
+    </div>
+    <div style="margin-top:8px"><span style="font-size:10px;color:var(--text-muted)">Next Action</span>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+        <div contenteditable="${!isClosed}" class="na-desc" style="font-size:12px;color:var(--accent);flex:1;min-width:0;border-bottom:1px dashed var(--border);padding-bottom:2px;outline:none" onblur="saveNextAction('${escAttr(o.id)}')">${escHtml((o.nextAction||'').replace(/by\s*\d{4}-\d{2}-\d{2}/,'').replace(/—\s*\[(Planned|In Progress|Done)\]/,'').replace(/\s*—\s*$/,'').trim()||'-')}</div>
+        <input type="date" class="na-date" value="${escAttr(o.nextActionDue||'')}" ${isClosed?'disabled':''} onchange="saveNextAction('${escAttr(o.id)}')" style="font-size:11px;font-family:var(--font-mono);color:var(--text-secondary);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);padding:2px 4px;cursor:pointer;width:120px">
+        <span class="status-badge" style="cursor:${isClosed?'default':'pointer'};font-size:10px;padding:2px 8px;border-radius:8px;${o.nextActionStatus==='Done'?'background:var(--success)14;color:var(--success);border:1px solid var(--success)25':o.nextActionStatus==='In Progress'?'background:var(--warning)14;color:var(--warning);border:1px solid var(--warning)25':'background:var(--accent)0d;color:var(--accent);border:1px solid var(--accent)20'}" ${!isClosed?`onclick="cycleNextActionStatus('${escAttr(o.id)}')"`:''}>${escHtml(o.nextActionStatus||'Planned')}</span>
+      </div>
+    </div>
+  </div></div>`;
+
+  html+=`<div class="detail-section"><h4 style="display:flex;justify-content:space-between;align-items:center">Stakeholders${!isClosed?` <span style="display:flex;gap:4px"><button class="btn btn-ghost" style="font-size:10px;padding:2px 8px" onclick="syncContacts('${escAttr(o.id)}')">↻ Sync</button><button class="btn btn-ghost" style="font-size:10px;padding:2px 8px" onclick="addStakeholder('${escAttr(o.id)}')">+ Add</button></span>`:''}</h4><div class="detail-content">`;
+  if(o.stakeholders&&o.stakeholders.length){
+    html+=`<table class="data-table"><tr><th>Name</th><th>Role</th><th>Influence</th><th>Attitude</th>${!isClosed?'<th></th>':''}</tr>`;
+    o.stakeholders.forEach((s,i)=>{
+      const ic={High:'var(--danger)',Medium:'var(--warning)',Low:'var(--success)'}[s.influence]||'var(--text-muted)';
+      const ac={Supporter:'var(--success)',Champion:'var(--accent)',Neutral:'var(--warning)',Skeptic:'var(--danger)',Unknown:'var(--text-muted)'}[s.attitude]||'var(--text-muted)';
+      html+=`<tr><td>${escHtml(s.name)}</td><td>${escHtml(s.role)}</td><td>${!isClosed?`<span style="cursor:pointer;font-weight:600;color:${ic};padding:2px 6px;border-radius:6px;background:${ic}14;border:1px solid ${ic}30" onclick="cycleInfluence('${escAttr(o.id)}',${i},'${escAttr(s.influence)}')">${escHtml(s.influence)}</span>`:`<span style="color:${ic}">${escHtml(s.influence)}</span>`}</td><td>${!isClosed?`<span style="cursor:pointer;font-weight:600;color:${ac};padding:2px 6px;border-radius:6px;background:${ac}14;border:1px solid ${ac}30" onclick="cycleAttitude('${escAttr(o.id)}',${i},'${escAttr(s.attitude)}')">${escHtml(s.attitude)}</span>`:`<span style="color:${ac}">${escHtml(s.attitude)}</span>`}</td>${!isClosed?`<td><button style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;padding:2px 4px" onclick="removeStakeholder('${escAttr(o.id)}',${i})">&times;</button></td>`:''}</tr>`;
+    });
+    html+=`</table>`;
+  }else{
+    html+=`<div style="font-size:11px;color:var(--text-muted)">No stakeholders added yet</div>`;
+  }
+  html+=`</div></div>`;
+
+  html+=`<div class="detail-section"><h4>Timeline</h4><div class="detail-content">`;
+  const meetings=(o.meetings||[]).slice().sort((a,b)=>(b.fields?.Date||'').localeCompare(a.fields?.Date||''));
+  if(meetings.length){
+    meetings.forEach(m=>{
+      const date=m.fields?.Date||'';
+      const title=m.fields?.Title||m.fields?.Opportunity||'Meeting';
+      const attendees=m.fields?.Attendees||'';
+      html+=`<div style="display:flex;gap:8px;padding:4px 0;align-items:baseline;border-bottom:1px solid var(--border);cursor:pointer" onclick="openMeetingDetail('${escAttr(o.id)}',null,'${escAttr(m.filename||'')}')">
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);flex-shrink:0">${date}</span>
+        <span style="font-size:12px;font-weight:500;color:var(--text-primary);flex:1">${escHtml(title)}</span>
+        <span style="font-size:10px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;flex-shrink:0">${escHtml(attendees)}</span>
+      </div>`;
+    });
+  }else{
+    html+=`<div style="font-size:11px;color:var(--text-muted)">No meetings recorded yet</div>`;
+  }
+  html+=`</div></div>`;
+
+  if(o.notes&&!isClosed){
+    html+=`<div class="detail-section"><h4>Notes</h4><div class="detail-content" contenteditable="true" style="white-space:pre-wrap;font-size:12px;line-height:1.6" onblur="saveOppField('${escAttr(o.id)}','notes',this.textContent)">${escHtml(o.notes)}</div></div>`;
+  }else if(o.notes){
+    html+=`<div class="detail-section"><h4>Notes</h4><div class="detail-content" style="white-space:pre-wrap;font-size:12px;line-height:1.6">${escHtml(o.notes)}</div></div>`;
+  }else if(!isClosed){
+    html+=`<div class="detail-section"><h4>Notes</h4><div class="detail-content" contenteditable="true" style="white-space:pre-wrap;font-size:12px;line-height:1.6;min-height:40px" data-placeholder="Click to add notes..." onblur="saveOppField('${escAttr(o.id)}','notes',this.textContent)" onfocus="if(!this.textContent.trim())this.textContent=''"></div></div>`;
+  }
+
+  openDetail(`${o.client} — ${o.name}`,html);
+}
+
+let _activeMeeting=null;
+function findMeeting(oppId,filename){
+  const o=summaryData.opportunities?.find(x=>x.id===oppId);
+  return o?.meetings?.find(x=>x.filename===filename)||null;
+}
+async function saveMeetingField(oppId,filename,field,value){
+  const m=findMeeting(oppId,filename);
+  if(!m)return;
+  const curr=field==='attendees'?m.fields?.Attendees:field==='venue'?m.fields?.Venue:field==='date'?m.fields?.Date:field==='title'?m.fields?.Title:m[field];
+  const currStr=typeof curr==='object'?JSON.stringify(curr):String(curr||'');
+  const valStr=typeof value==='object'?JSON.stringify(value):String(value||'');
+  if(currStr===valStr)return;
+  const res=await apiPut(`/api/opportunities/${encodeURIComponent(oppId)}/meetings/${encodeURIComponent(filename)}`,{[field]:value});
+  if(res.error)return showToast(res.error,'error');
+  await loadAll();
+  if(_activeMeeting){
+    _activeMeeting=findMeeting(oppId,filename);
+    openMeetingDetail(oppId,null,filename);
+  } else {
+    renderView();
+  }
+  showToast('Updated');
+}
+
+function openMeetingDetail(oppId,date,filename){
+  const o=summaryData.opportunities.find(x=>x.id===oppId);
+  if(!o)return;
+  const m=o.meetings?.find(x=>(x.fields?.Date||'')===date || x.filename===filename);
+  if(!m)return;
+  _activeMeeting=m;
+  const venue=m.fields?.Venue||m.fields?.Location||'';
+  let html='';
+  html+=`<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">${escHtml(o.id)}</div>`;
+  html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+    <div><span style="font-size:10px;color:var(--text-muted)">Title</span><div contenteditable="true" style="font-size:14px;font-weight:700" onblur="saveMeetingField('${escAttr(oppId)}','${escAttr(m.filename)}','title',this.textContent.trim())">${escHtml(m.fields?.Title||m.fields?.Opportunity||'')}</div></div>
+    <div><span style="font-size:10px;color:var(--text-muted)">Date</span><input type="text" value="${escAttr(m.fields?.Date||'')}" placeholder="yyyy-mm-dd" pattern="\d{4}-\d{2}-\d{2}" style="font-family:var(--font-mono);font-size:12px;border:1px solid var(--border);border-radius:4px;padding:2px 6px;background:transparent;color:var(--text-primary);width:100%" onchange="saveMeetingField('${escAttr(oppId)}','${escAttr(m.filename)}','date',this.value)"></div>
+    <div><span style="font-size:10px;color:var(--text-muted)">Attendees</span><div contenteditable="true" style="font-size:12px" onblur="saveMeetingField('${escAttr(oppId)}','${escAttr(m.filename)}','attendees',this.textContent.trim())">${escHtml(m.fields?.Attendees||'-')}</div></div>
+    <div><span style="font-size:10px;color:var(--text-muted)">Venue</span><select onchange="saveMeetingField('${escAttr(oppId)}','${escAttr(m.filename)}','venue',this.value)" style="font-size:12px;padding:2px 4px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);color:var(--text-primary);cursor:pointer"><option value="Online" ${venue.startsWith('Online')?'selected':''}>Online</option><option value="Physical" ${!venue.startsWith('Online')&&venue!=='TBD'&&venue?'selected':''}>Physical</option></select></div>
+  </div>`;
+
+  // Agenda
+  html+=`<div class="detail-section"><h4 style="display:flex;justify-content:space-between;align-items:center">Agenda <button class="btn btn-ghost" style="font-size:10px;padding:2px 8px" onclick="addMeetingItem('${escAttr(oppId)}','${escAttr(m.filename)}','agenda')">+ Add</button></h4><div class="detail-content">`;
+  (m.agenda||[]).forEach((a,i)=>{html+=`<div style="display:flex;gap:6px;align-items:baseline;padding:2px 0;font-size:12px;color:var(--text-secondary)"><span contenteditable="true" style="flex:1" onblur="updateMeetingListItem('${escAttr(oppId)}','${escAttr(m.filename)}','agenda',${i},this.textContent.trim())">${escHtml(a)}</span><button style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:12px;padding:0 2px" onclick="removeMeetingListItem('${escAttr(oppId)}','${escAttr(m.filename)}','agenda',${i})">&times;</button></div>`;});
+  if(!m.agenda||!m.agenda.length)html+=`<div style="font-size:11px;color:var(--text-muted)">No agenda items</div>`;
+  html+=`</div></div>`;
+
+  // Requirements
+  const reqStatusOrder=['Open','Confirmed','Gap'];
+  const reqStatusColors={Open:'var(--text-secondary)',Confirmed:'var(--success)',Gap:'var(--danger)'};
+  const today=new Date().toISOString().split('T')[0];
+  html+=`<div class="detail-section"><h4 style="display:flex;justify-content:space-between;align-items:center">Requirements <button class="btn btn-ghost" style="font-size:10px;padding:2px 8px" onclick="addMeetingItem('${escAttr(oppId)}','${escAttr(m.filename)}','requirements')">+ Add</button></h4><div class="detail-content">`;
+  (m.requirements||[]).forEach((r,i)=>{
+    const rt=typeof r==='string'?r:r.text;
+    const rs=typeof r==='string'?'Open':(r.status||'Open');
+    const rd=typeof r==='string'?'':(r.due||'');
+    const clr=reqStatusColors[rs]||'var(--text-secondary)';
+    const nextIdx=(reqStatusOrder.indexOf(rs)+1)%reqStatusOrder.length;
+    const next=reqStatusOrder[nextIdx];
+    const isOverdue=rd&&rd<today&&rs!=='Confirmed';
+    const isDueSoon=rd&&rs!=='Confirmed'&&!isOverdue&&((new Date(rd)-new Date(today))/(86400000))<=7&&((new Date(rd)-new Date(today))/(86400000))>=0;
+    const dueClr=isOverdue?'var(--danger)':isDueSoon?'var(--warning)':'var(--text-muted)';
+    html+=`<div style="display:flex;gap:6px;align-items:center;padding:3px 0;font-size:12px;border-bottom:1px solid var(--border)"><span data-opp="${escAttr(oppId)}" data-file="${escAttr(m.filename)}" data-idx="${i}" data-st="${rs}" class="req-status-badge" style="font-size:9px;padding:2px 6px;border-radius:10px;background:${clr}1a;color:${clr};border:1px solid ${clr}44;cursor:pointer;user-select:none;white-space:nowrap;flex-shrink:0" title="Click: ${next}">${rs}</span><span contenteditable="true" style="flex:1;color:var(--text-secondary)" onblur="updateMeetingReqText('${escAttr(oppId)}','${escAttr(m.filename)}',${i},this.textContent.trim())">${escHtml(rt)}</span><input type="text" value="${escAttr(rd)}" placeholder="yyyy-mm-dd" pattern="\\d{4}-\\d{2}-\\d{2}" style="font-family:var(--font-mono);font-size:10px;color:${dueClr};border:1px solid var(--border);border-radius:4px;padding:1px 4px;background:transparent;width:100px;flex-shrink:0;${isOverdue?'font-weight:700':''}" onchange="updateMeetingReqDue('${escAttr(oppId)}','${escAttr(m.filename)}',${i},this.value)"><button style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:12px;padding:0 2px;flex-shrink:0" onclick="removeMeetingListItem('${escAttr(oppId)}','${escAttr(m.filename)}','requirements',${i})">&times;</button></div>`;
+  });
+  if(!m.requirements||!m.requirements.length)html+=`<div style="font-size:11px;color:var(--text-muted)">No requirements yet</div>`;
+  html+=`</div></div>`;
+
+  // Questions
+  html+=`<div class="detail-section"><h4 style="display:flex;justify-content:space-between;align-items:center">Questions <button class="btn btn-ghost" style="font-size:10px;padding:2px 8px" onclick="addMeetingQA('${escAttr(oppId)}','${escAttr(m.filename)}')">+ Add</button></h4><div class="detail-content">`;
+  (m.questions||[]).forEach((q,i)=>{
+    const isOpen=!q.answer||q.answer==='(open)';
+    html+=`<div style="margin-bottom:10px;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface)"><div style="display:flex;gap:6px;align-items:baseline"><span style="font-size:10px;color:var(--accent);flex-shrink:0">Q:</span><span contenteditable="true" style="flex:1;font-size:12px;color:var(--accent)" onblur="updateMeetingQA('${escAttr(oppId)}','${escAttr(m.filename)}',${i},'question',this.textContent.trim())">${escHtml(q.question)}</span><button style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:12px;padding:0 2px;flex-shrink:0" onclick="removeMeetingListItem('${escAttr(oppId)}','${escAttr(m.filename)}','questions',${i})">&times;</button></div><div style="display:flex;gap:6px;align-items:baseline;margin-top:3px"><span style="font-size:10px;color:${isOpen?'var(--warning)':'var(--text-muted)'};flex-shrink:0">A:</span><span contenteditable="true" style="flex:1;font-size:11px;color:${isOpen?'var(--warning)':'var(--text-secondary)'}" onblur="updateMeetingQA('${escAttr(oppId)}','${escAttr(m.filename)}',${i},'answer',this.textContent.trim())">${isOpen?'(open)':escHtml(q.answer)}</span></div></div>`;
+  });
+  if(!m.questions||!m.questions.length)html+=`<div style="font-size:11px;color:var(--text-muted)">No questions yet</div>`;
+  html+=`</div></div>`;
+
+  // Risks
+  html+=`<div class="detail-section"><h4 style="display:flex;justify-content:space-between;align-items:center">Risks <button class="btn btn-ghost" style="font-size:10px;padding:2px 8px" onclick="addMeetingRisk('${escAttr(oppId)}','${escAttr(m.filename)}')">+ Add</button></h4><div class="detail-content">`;
+  (m.risks||[]).forEach((r,i)=>{
+    const unmit=!r.mitigation||r.mitigation==='(no mitigation yet)';
+    html+=`<div style="margin-bottom:8px;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-xs);border-left:3px solid var(--danger);background:var(--surface)"><div style="display:flex;gap:6px;align-items:baseline"><span contenteditable="true" style="flex:1;font-size:12px;font-weight:600;color:var(--danger)" onblur="updateMeetingRisk('${escAttr(oppId)}','${escAttr(m.filename)}',${i},'risk',this.textContent.trim())">${escHtml(r.risk)}</span><button style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:12px;padding:0 2px;flex-shrink:0" onclick="removeMeetingListItem('${escAttr(oppId)}','${escAttr(m.filename)}','risks',${i})">&times;</button></div><div style="display:flex;gap:6px;align-items:baseline;margin-top:3px"><span style="font-size:10px;color:${unmit?'var(--warning)':'var(--text-muted)'};flex-shrink:0">Mitigation:</span><span contenteditable="true" style="flex:1;font-size:11px;color:${unmit?'var(--warning)':'var(--text-secondary)'}" onblur="updateMeetingRisk('${escAttr(oppId)}','${escAttr(m.filename)}',${i},'mitigation',this.textContent.trim())">${unmit?'No mitigation yet':escHtml(r.mitigation)}</span></div></div>`;
+  });
+  if(!m.risks||!m.risks.length)html+=`<div style="font-size:11px;color:var(--text-muted)">No risks identified</div>`;
+  html+=`</div></div>`;
+
+  // Action Items
+  const statusOrder=['Open','In Progress','Completed','Delayed','Cancelled'];
+  const statusColors={Open:'var(--text-secondary)','In Progress':'var(--info)',Completed:'var(--success)',Delayed:'var(--warning)',Cancelled:'var(--text-muted)'};
+  html+=`<div class="detail-section"><h4 style="display:flex;justify-content:space-between;align-items:center">Action Items <button class="btn btn-ghost" style="font-size:10px;padding:2px 8px" onclick="addMeetingAction('${escAttr(oppId)}','${escAttr(m.filename)}')">+ Add</button></h4><div class="detail-content" id="meeting-actions">`;
+  (m.actionItems||[]).forEach((a,i)=>{
+    const st=a.status||'Open';
+    const clr=statusColors[st]||'var(--text-secondary)';
+    const done=st==='Completed'||st==='Cancelled';
+    html+=`<div style="display:flex;gap:8px;padding:5px 0;font-size:12px;color:${clr};align-items:center;border-bottom:1px solid var(--border)"><span data-opp="${escAttr(oppId)}" data-file="${escAttr(m.filename)}" data-idx="${i}" data-st="${st}" class="action-status-badge" style="font-size:9px;padding:2px 7px;border-radius:10px;background:${clr}1a;color:${clr};border:1px solid ${clr}44;cursor:pointer;user-select:none;white-space:nowrap;flex-shrink:0" title="Click to change status">${st}</span><span contenteditable="true" style="flex:1;${done?'text-decoration:line-through;opacity:0.55':''}" onblur="updateMeetingAction('${escAttr(oppId)}','${escAttr(m.filename)}',${i},'text',this.textContent.trim())">${escHtml(a.text)}</span><span contenteditable="true" style="font-size:10px;color:var(--text-muted);min-width:44px;flex-shrink:0" onblur="updateMeetingAction('${escAttr(oppId)}','${escAttr(m.filename)}',${i},'owner',this.textContent.trim())">${escHtml(a.owner||'')}</span><span contenteditable="true" style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);min-width:44px;flex-shrink:0" onblur="updateMeetingAction('${escAttr(oppId)}','${escAttr(m.filename)}',${i},'due',this.textContent.trim())">${escHtml(a.due||'')}</span><button style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:12px;padding:0 2px;flex-shrink:0" onclick="removeMeetingListItem('${escAttr(oppId)}','${escAttr(m.filename)}','actionItems',${i})">&times;</button></div>`;
+  });
+  if(!m.actionItems||!m.actionItems.length)html+=`<div style="font-size:11px;color:var(--text-muted)">No action items</div>`;
+  html+=`</div></div>`;
+
+  openDetail(`${m.fields?.Title||m.fields?.Opportunity||'Meeting'}`,html);
+}
+
+async function addMeetingItem(oppId,filename,field){
+  const val=prompt(`New ${field==='agenda'?'agenda item':'requirement'}:`);
+  if(!val)return;
+  const m=findMeeting(oppId,filename);if(!m)return;
+  const item=field==='requirements'?{text:val,status:'Open'}:val;
+  const updated=[...(m[field]||[]),item];
+  await saveMeetingField(oppId,filename,field,updated);
+}
+
+async function removeMeetingListItem(oppId,filename,field,index){
+  const m=findMeeting(oppId,filename);if(!m)return;
+  const updated=(m[field]||[]).filter((_,i)=>i!==index);
+  await saveMeetingField(oppId,filename,field,updated);
+}
+
+async function updateMeetingListItem(oppId,filename,field,index,value){
+  if(!value)return;
+  const m=findMeeting(oppId,filename);if(!m)return;
+  const list=[...(m[field]||[])];
+  if(field==='requirements'){list[index]={...list[index],text:value};}
+  else{list[index]=value;}
+  await saveMeetingField(oppId,filename,field,list);
+}
+
+async function updateMeetingReqText(oppId,filename,index,value){
+  if(!value)return;
+  const m=findMeeting(oppId,filename);if(!m)return;
+  const list=[...(m.requirements||[])];
+  list[index]={...list[index],text:value};
+  await saveMeetingField(oppId,filename,'requirements',list);
+}
+
+async function updateMeetingReqDue(oppId,filename,index,value){
+  const m=findMeeting(oppId,filename);if(!m)return;
+  const list=[...(m.requirements||[])];
+  list[index]={...list[index],due:value};
+  await saveMeetingField(oppId,filename,'requirements',list);
+}
+
+async function cycleReqStatus(oppId,filename,index,current,next){
+  const m=findMeeting(oppId,filename);if(!m)return;
+  const list=[...(m.requirements||[])];
+  list[index]={...list[index],status:next};
+  await saveMeetingField(oppId,filename,'requirements',list);
+}
+
+async function addMeetingQA(oppId,filename){
+  const q=prompt('Question:');
+  if(!q)return;
+  const m=findMeeting(oppId,filename);if(!m)return;
+  const updated=[...(m.questions||[]),{question:q,answer:''}];
+  await saveMeetingField(oppId,filename,'questions',updated);
+}
+
+async function updateMeetingQA(oppId,filename,index,field,value){
+  const m=findMeeting(oppId,filename);if(!m)return;
+  const list=[...(m.questions||[])];list[index]={...list[index],[field]:value};
+  if(m.questions&&m.questions[index]&&m.questions[index][field]===value)return;
+  await saveMeetingField(oppId,filename,'questions',list);
+}
+
+async function addMeetingRisk(oppId,filename){
+  const risk=prompt('Risk:');
+  if(!risk)return;
+  const m=findMeeting(oppId,filename);if(!m)return;
+  const updated=[...(m.risks||[]),{risk,mitigation:''}];
+  await saveMeetingField(oppId,filename,'risks',updated);
+}
+
+async function updateMeetingRisk(oppId,filename,index,field,value){
+  const m=findMeeting(oppId,filename);if(!m)return;
+  const list=[...(m.risks||[])];list[index]={...list[index],[field]:value};
+  if(m.risks&&m.risks[index]&&m.risks[index][field]===value)return;
+  await saveMeetingField(oppId,filename,'risks',list);
+}
+
+async function addMeetingAction(oppId,filename){
+  const m=findMeeting(oppId,filename);if(!m)return;
+  const updated=[...(m.actionItems||[]),{text:'New task',owner:'',due:'',status:'Open'}];
+  await saveMeetingField(oppId,filename,'actionItems',updated);
+}
+
+async function updateMeetingAction(oppId,filename,index,field,value){
+  const m=findMeeting(oppId,filename);if(!m)return;
+  const list=[...(m.actionItems||[])];list[index]={...list[index],[field]:value};
+  if(m.actionItems&&m.actionItems[index]&&m.actionItems[index][field]===value)return;
+  await saveMeetingField(oppId,filename,'actionItems',list);
+}
+
+async function cycleActionStatus(oppId,filename,index,current,next){
+  const m=findMeeting(oppId,filename);if(!m)return;
+  const list=[...(m.actionItems||[])];list[index]={...list[index],status:next};
+  await saveMeetingField(oppId,filename,'actionItems',list);
+}
+
+// Event delegation for status badges (actions + requirements)
+document.addEventListener('click',function(e){
+  const actionBadge=e.target.closest('.action-status-badge');
+  if(actionBadge){
+    e.preventDefault();e.stopPropagation();
+    const oppId=actionBadge.dataset.opp;
+    const filename=actionBadge.dataset.file;
+    const idx=parseInt(actionBadge.dataset.idx);
+    const current=actionBadge.dataset.st;
+    const statusOrder=['Open','In Progress','Completed','Delayed','Cancelled'];
+    const nextIdx=(statusOrder.indexOf(current)+1)%statusOrder.length;
+    cycleActionStatus(oppId,filename,idx,current,statusOrder[nextIdx]);
+    return;
+  }
+  const reqBadge=e.target.closest('.req-status-badge');
+  if(reqBadge){
+    e.preventDefault();e.stopPropagation();
+    const oppId=reqBadge.dataset.opp;
+    const filename=reqBadge.dataset.file;
+    const idx=parseInt(reqBadge.dataset.idx);
+    const current=reqBadge.dataset.st;
+    const statusOrder=['Open','Confirmed','Gap'];
+    const nextIdx=(statusOrder.indexOf(current)+1)%statusOrder.length;
+    cycleReqStatus(oppId,filename,idx,current,statusOrder[nextIdx]);
+    return;
+  }
+},{capture:true});
+
+function openResourceDetail(cat,filename){
+  const r=summaryData.resources.find(x=>x.category===cat&&x.filename===filename);
+  if(!r)return;
+  openDetail(r.filename.replace('.md',''),`<div class="detail-section"><div class="detail-content" style="font-size:12px;line-height:1.8">${md2html(r.content)}</div></div>`);
+}
+
+function openMeetingResource(oppFolder,filename){
+  const r=summaryData.resources.find(x=>x.oppFolder===oppFolder&&x.filename===filename);
+  if(!r)return;
+  const opp=summaryData.opportunities.find(x=>x.id===oppFolder);
+  const label=opp?`${opp.client} — ${filename.replace('.md','')}`:filename.replace('.md','');
+  openDetail(label,`<div class="detail-section"><div class="detail-content" style="font-size:12px;line-height:1.8">${md2html(r.content)}</div></div>`);
+}
+
+
+function openClientDetail(id){
+  const c=summaryData.clients.find(x=>x.id===id);
+  if(!c)return;
+  const relatedOpps=(summaryData.opportunities||[]).filter(o=>o.client===c.name);
+  let html='';
+  html+=`<div style="font-size:11px;color:var(--text-muted);margin-bottom:12px">${c.id} · Updated ${fmtDate(c.updated)}</div>`;
+  html+=`<div class="detail-section"><h4>Overview</h4><div class="detail-content">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><span style="font-size:10px;color:var(--text-muted)">Industry</span><div style="font-size:13px">${escHtml(c.industry||'-')}</div></div>
+      <div><span style="font-size:10px;color:var(--text-muted)">Region</span><div style="font-size:13px">${escHtml(c.region||'-')}</div></div>
+      <div><span style="font-size:10px;color:var(--text-muted)">Size</span><div style="font-size:13px">${escHtml(c.size||'-')}</div></div>
+      <div><span style="font-size:10px;color:var(--text-muted)">Active Opps</span><div style="font-family:var(--font-mono);font-size:16px;font-weight:700">${relatedOpps.filter(o=>!['Won','Lost'].includes(o.stage)).length}</div></div>
+    </div>
+  </div></div>`;
+  if(c.business){
+    html+=`<div class="detail-section"><h4>Business</h4><div class="detail-content" style="font-size:12px;line-height:1.6;white-space:pre-wrap">${escHtml(c.business)}</div></div>`;
+  }
+
+  // Contacts — editable
+  html+=`<div class="detail-section"><h4>Contacts (${c.contacts.length})</h4><div class="detail-content">`;
+  if(c.contacts.length){
+    html+=`<table class="data-table" style="margin-bottom:8px"><tr><th>Name</th><th>Role</th><th>Email</th><th></th></tr>`;
+    c.contacts.forEach((ct,i)=>{
+      html+=`<tr>
+        <td><input class="ct-input" data-idx="${i}" data-field="name" value="${escAttr(ct.name)}" style="width:100px"></td>
+        <td><input class="ct-input" data-idx="${i}" data-field="role" value="${escAttr(ct.role)}" style="width:100px"></td>
+        <td><input class="ct-input" data-idx="${i}" data-field="email" value="${escAttr(ct.email)}" style="width:150px;font-size:11px"></td>
+        <td><button class="btn btn-ghost" style="padding:2px 6px;font-size:10px;color:var(--danger)" onclick="removeClientContact('${escAttr(c.id)}',${i})">&times;</button></td>
+      </tr>`;
+    });
+    html+=`</table>`;
+  }
+  html+=`<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end;margin-bottom:8px">
+    <div style="flex:1;min-width:80px"><span style="font-size:9px;color:var(--text-muted)">Name</span><input id="ct-new-name" placeholder="Name" style="width:100%"></div>
+    <div style="flex:1;min-width:80px"><span style="font-size:9px;color:var(--text-muted)">Role</span><input id="ct-new-role" placeholder="Role" style="width:100%"></div>
+    <div style="flex:1;min-width:120px"><span style="font-size:9px;color:var(--text-muted)">Email</span><input id="ct-new-email" placeholder="Email" style="width:100%"></div>
+    <button class="btn btn-primary" style="padding:5px 10px;font-size:10px;white-space:nowrap" onclick="addClientContact('${escAttr(c.id)}')">+ Add</button>
+  </div>`;
+  html+=`</div></div>`;
+
+  if(relatedOpps.length){
+    html+=`<div class="detail-section"><h4>Opportunities (${relatedOpps.length})</h4><div class="detail-content">`;
+    relatedOpps.forEach(o=>{
+      const sc=stageColor(o.stage);
+      html+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="openOppDetail('${escAttr(o.id)}')">
+        <span class="status-badge" style="background:${sc}22;color:${sc}">${o.stage}</span>
+        <span style="font-size:12px;font-weight:600;color:var(--text-primary);flex:1">${escHtml(o.name)}</span>
+        <span style="font-family:var(--font-mono);font-size:11px">${fmt$(o.budget)}</span>
+      </div>`;
+    });
+    html+=`</div></div>`;
+  }
+
+  if(c.notes){
+    html+=`<div class="detail-section"><h4>Notes</h4><div class="detail-content" style="white-space:pre-wrap;font-size:12px;line-height:1.6">${escHtml(c.notes)}</div></div>`;
+  }
+
+  openDetail(c.name,html);
+
+  // Bind contact field edits to auto-save on blur
+  document.querySelectorAll('.ct-input').forEach(el=>{
+    el.addEventListener('blur',()=>saveClientContactEdit(c.id));
+  });
+}
+
+async function saveClientContactEdit(clientId){
+  const c=summaryData.clients.find(x=>x.id===clientId);
+  if(!c)return;
+  const updated=c.contacts.map((ct,i)=>{
+    const row={name:'',role:'',email:''};
+    ['name','role','email'].forEach(f=>{
+      const el=document.querySelector(`.ct-input[data-idx="${i}"][data-field="${f}"]`);
+      row[f]=el?el.value.trim():ct[f];
+    });
+    return row;
+  });
+  const res=await apiPut(`/api/clients/${encodeURIComponent(clientId)}`,{contacts:updated});
+  if(res.error)return showToast(res.error,'error');
+  await loadAll();
+  openClientDetail(clientId);
+  showToast('Contact updated');
+}
+
+async function addClientContact(clientId){
+  const name=(document.getElementById('ct-new-name')||{}).value?.trim();
+  const role=(document.getElementById('ct-new-role')||{}).value?.trim();
+  const email=(document.getElementById('ct-new-email')||{}).value?.trim();
+  if(!name)return showToast('Contact name required','error');
+  const c=summaryData.clients.find(x=>x.id===clientId);
+  if(!c)return;
+  const contacts=[...c.contacts,{name,role,email}];
+  const res=await apiPut(`/api/clients/${encodeURIComponent(clientId)}`,{contacts});
+  if(res.error)return showToast(res.error,'error');
+  await loadAll();
+  openClientDetail(clientId);
+  showToast('Contact added');
+}
+
+async function removeClientContact(clientId,idx){
+  const c=summaryData.clients.find(x=>x.id===clientId);
+  if(!c)return;
+  const contacts=c.contacts.filter((_,i)=>i!==idx);
+  const res=await apiPut(`/api/clients/${encodeURIComponent(clientId)}`,{contacts});
+  if(res.error)return showToast(res.error,'error');
+  await loadAll();
+  openClientDetail(clientId);
+  showToast('Contact removed');
+}
+
+async function generateWeeklyReport(){
+  const start=document.getElementById('wr-start')?.value;
+  const end=document.getElementById('wr-end')?.value;
+  if(!start||!end)return showToast('Select start and end dates','error');
+  const btn=event.target;btn.disabled=true;btn.textContent='Generating...';
+  const res=await apiPost('/api/weekly-reports',{startDate:start,endDate:end});
+  btn.disabled=false;btn.textContent='Generate Weekly Report';
+  if(res.error)return showToast(res.error,'error');
+  await loadAll();
+  renderView();
+  showToast('Weekly report generated');
+}
+
+function renderSalesReport(md){
+  if(!md)return '';
+  const lines=md.split('\n');
+  let html='<div style="font-size:13px;line-height:1.8">';
+  let inTable=false,tableRows=[],tableHeaders=[];
+  let inQuote=false;
+  const hColors={'一':'var(--accent)','二':'var(--info)','三':'var(--warning)','四':'var(--success)'};
+
+  function flushTable(){
+    if(!tableRows.length)return;
+    const isWide=tableHeaders.length>=5;
+    let t='<div style="overflow-x:auto;margin:10px 0"><table style="border-collapse:collapse;width:100%;font-size:12px;min-width:${isWide?700:400}px">';
+    t+='<thead><tr>';
+    tableHeaders.forEach((h,hi)=>{
+      const w=hi===0&&isWide?'200px':'';
+      t+=`<th style="padding:8px 12px;border:1px solid var(--border);background:var(--surface);color:var(--text-secondary);font-weight:700;text-align:left;white-space:nowrap;${w?'min-width:'+w:''}">${h}</th>`;
+    });
+    t+='</tr></thead><tbody>';
+    tableRows.forEach((row,ri)=>{
+      const bg=ri%2?'var(--surface)':'transparent';
+      t+='<tr>';
+      row.forEach((cell,ci)=>{
+        const isFirst=ci===0;
+        t+=`<td style="padding:8px 12px;border:1px solid var(--border);background:${bg};vertical-align:top;${isFirst?'font-weight:600;color:var(--text-primary);white-space:nowrap;min-width:120px':''}">${cell}</td>`;
+      });
+      t+='</tr>';
+    });
+    t+='</tbody></table></div>';
+    return t;
+  }
+
+  function renderInline(text){
+    return text
+      .replace(/\*\*(.+?)\*\*/g,'<strong style="font-weight:700;color:var(--text-primary)">$1</strong>')
+      .replace(/\*(.+?)\*/g,'<em>$1</em>')
+      .replace(/`([^`]+)`/g,'<code style="font-family:var(--font-mono);font-size:11px;padding:1px 5px;border-radius:4px;background:var(--surface);border:1px solid var(--border)">$1</code>')
+      .replace(/<br\s*\/?>/g,'<br>');
+  }
+
+  for(let i=0;i<lines.length;i++){
+    const ln=lines[i];
+    const t=ln.trim();
+
+    // horizontal rule
+    if(t==='---'){
+      if(inTable){html+=flushTable();inTable=false;tableRows=[];tableHeaders=[];}
+      if(inQuote){html+='</div>';inQuote=false;}
+      html+='<hr style="border:none;border-top:1px solid var(--border);margin:16px 0">';
+      continue;
+    }
+
+    // headings
+    const h1=t.match(/^# (.+)$/);
+    if(h1){
+      if(inTable){html+=flushTable();inTable=false;tableRows=[];tableHeaders=[];}
+      if(inQuote){html+='</div>';inQuote=false;}
+      html+=`<h1 style="font-size:18px;font-weight:800;margin:0 0 16px;color:var(--text-primary)">${renderInline(h1[1])}</h1>`;
+      continue;
+    }
+    const h2=t.match(/^## (.+)$/);
+    if(h2){
+      if(inTable){html+=flushTable();inTable=false;tableRows=[];tableHeaders=[];}
+      if(inQuote){html+='</div>';inQuote=false;}
+      const num=h2[1].match(/^[一二三四五六七八九十]+[、.]/);
+      const c=num?hColors[num[0][0]]||'var(--text-primary)':'var(--text-primary)';
+      html+=`<h2 style="font-size:16px;font-weight:700;margin:20px 0 10px;padding:8px 14px;border-left:4px solid ${c};color:${c};border-radius:0 var(--radius-sm) var(--radius-sm) 0;background:${c}0d">${renderInline(h2[1])}</h2>`;
+      continue;
+    }
+    const h3=t.match(/^### (.+)$/);
+    if(h3){
+      if(inTable){html+=flushTable();inTable=false;tableRows=[];tableHeaders=[];}
+      if(inQuote){html+='</div>';inQuote=false;}
+      html+=`<h3 style="font-size:14px;font-weight:700;margin:14px 0 6px;color:var(--text-secondary)">${renderInline(h3[1])}</h3>`;
+      continue;
+    }
+
+    // quote block (> lines)
+    if(t.startsWith('> ')){
+      if(inTable){html+=flushTable();inTable=false;tableRows=[];tableHeaders=[];}
+      if(!inQuote){
+        html+='<div style="margin:8px 0 12px;padding:10px 16px;background:var(--surface);border-radius:var(--radius-sm);border-left:3px solid var(--border);font-size:12px;color:var(--text-secondary);line-height:1.9">';
+        inQuote=true;
+      }
+      html+=`<div>${renderInline(t.replace(/^> /,''))}</div>`;
+      continue;
+    }else if(inQuote){
+      html+='</div>';
+      inQuote=false;
+    }
+
+    // table rows
+    const tblMatch=t.match(/^\|(.+)\|$/);
+    if(tblMatch){
+      const cells=tblMatch[1].split('|').map(c=>c.trim());
+      if(cells.every(c=>/^[\-:]+$/.test(c))){
+        // separator line, skip
+        continue;
+      }
+      if(!inTable){
+        inTable=true;
+        tableHeaders=cells.map(c=>renderInline(c));
+        tableRows=[];
+      }else{
+        tableRows.push(cells.map(c=>renderInline(c)));
+      }
+      continue;
+    }else if(inTable){
+      html+=flushTable();
+      inTable=false;tableRows=[];tableHeaders=[];
+    }
+
+    // checkbox list
+    const chk=t.match(/^- \[([ xX])\] (.+)$/);
+    if(chk){
+      const checked=chk[1]!==' ';
+      html+=`<div style="padding:3px 0 3px 20px;text-indent:-16px;font-size:13px;color:var(--text-primary)">
+        <span style="display:inline-block;width:14px;height:14px;border-radius:3px;border:1.5px solid var(--border);margin-right:6px;vertical-align:middle;${checked?'background:var(--accent);border-color:var(--accent)':''}">
+          ${checked?'<svg viewBox="0 0 12 12" style="width:10px;height:10px;margin:1px;fill:white"><path d="M10 3L5 8 2 5"/></svg>':''}
+        </span>${renderInline(chk[2])}</div>`;
+      continue;
+    }
+
+    // bullet list
+    if(t.startsWith('- ')){
+      html+=`<div style="padding:3px 0 3px 20px;text-indent:-12px;font-size:13px;color:var(--text-primary)">• ${renderInline(t.replace(/^- /,''))}</div>`;
+      continue;
+    }
+
+    // empty line
+    if(t===''){
+      html+='<div style="margin:4px 0"></div>';
+      continue;
+    }
+
+    // plain paragraph
+    html+=`<p style="margin:6px 0;font-size:13px;line-height:1.8;color:var(--text-primary)">${renderInline(t)}</p>`;
+  }
+
+  if(inTable)html+=flushTable();
+  if(inQuote)html+='</div>';
+  html+='</div>';
+  return html;
+}
+
+async function openWeeklyReport(filename){
+  const r=(summaryData.weeklyReports||[]).find(x=>x.filename===filename);
+  if(!r)return;
+  const isSalesReport=filename.startsWith('销售周报');
+  if(isSalesReport){
+    openDetail(r.title,renderSalesReport(r.content));
+    return;
+  }
+  const opps=parseWeeklyReportContent(r.content);
+  let html='';
+  html+=`<div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;letter-spacing:.3px">${escHtml(r.period||'')}</div>`;
+
+  for(const category of opps){
+    const isCloud=category.name.includes('Cloud');
+    const catColor=isCloud?'var(--info)':'var(--accent)';
+    html+=`<div style="margin-bottom:32px">`;
+    html+=`<h3 style="font-size:18px;color:${catColor};border-bottom:2px solid ${catColor}33;padding-bottom:10px;margin-bottom:10px">${escHtml(category.name)}</h3>`;
+    if(category.summary) html+=`<div style="font-size:13px;color:var(--accent);margin-bottom:18px;font-weight:600;background:var(--accent)0d;padding:10px 14px;border-radius:var(--radius-sm);border-left:3px solid var(--accent)">${escHtml(category.summary)}</div>`;
+
+    for(const product of category.products){
+      if(category.products.length>1){
+        html+=`<div style="font-size:14px;font-weight:700;color:var(--text-secondary);margin:16px 0 10px;padding:5px 12px;background:var(--surface);border-radius:var(--radius-xs);display:inline-block">Product: ${escHtml(product.name)}</div>`;
+      }
+
+      for(const opp of product.opportunities){
+        html+=`<div class="glass" style="margin-bottom:14px;padding:20px 24px;border-radius:var(--radius);border-left:3px solid ${catColor}55">`;
+
+        // Header: client · opportunity — budget
+        html+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div>
+            <span style="font-size:17px;font-weight:700;color:var(--text-primary)">${escHtml(opp.client)}</span>
+            <span style="color:var(--text-muted);margin:0 8px">·</span>
+            <span style="font-size:14px;color:var(--text-secondary)">${escHtml(opp.opportunity)}</span>
+          </div>
+          <span style="font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--accent)">${escHtml(opp.budget)}</span>
+        </div>`;
+
+        // This Week Progress — meeting cards
+        if(opp.meetings.length){
+          html+=`<div style="margin-bottom:14px">
+            <div style="font-size:11px;color:var(--success);text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:8px">This Week Progress</div>`;
+          opp.meetings.forEach(m=>{
+            html+=`<div style="margin-bottom:10px;padding:12px 16px;background:var(--success)06;border-radius:var(--radius-xs);border-left:2px solid var(--success)44">
+              <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:6px">${escHtml(m.date)} ${escHtml(m.title)}</div>
+              <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--text-secondary);line-height:1.8">
+                ${m.agenda.map(a=>`<li>${escHtml(a)}</li>`).join('')}
+              </ul>
+            </div>`;
+          });
+          html+=`</div>`;
+        } else {
+          html+=`<div style="margin-bottom:14px">
+            <div style="font-size:11px;color:var(--success);text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:6px">This Week Progress</div>
+            <div style="font-size:13px;color:var(--text-muted);font-style:italic">No meetings in this period</div>
+          </div>`;
+        }
+
+        // Next Week
+        html+=`<div style="margin-bottom:14px">
+          <div style="font-size:11px;color:var(--info);text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:6px">Next Week Plan</div>
+          <div style="font-size:13px;color:var(--text-muted);font-style:italic;padding:10px 14px;background:var(--info)06;border-radius:var(--radius-xs);border:1px dashed var(--info)33">To be filled by sales</div>
+        </div>`;
+
+        // Risks
+        if(opp.risks.length){
+          html+=`<div style="margin-bottom:14px">
+            <div style="font-size:11px;color:var(--danger);text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:8px">Risks</div>`;
+          opp.risks.forEach(r=>{
+            html+=`<div style="margin-bottom:8px;padding:10px 14px;background:var(--danger)08;border-radius:var(--radius-xs);border-left:2px solid var(--danger)55">
+              ${r.date||r.meeting?`<div style="font-size:11px;color:var(--text-muted);margin-bottom:3px">${escHtml(r.date)} ${escHtml(r.meeting)}</div>`:''}
+              <div style="font-size:13px;color:var(--text-secondary)">${escHtml(r.text)}</div>
+              ${r.mit?`<div style="font-size:12px;color:var(--text-muted);margin-top:4px"><span style="font-weight:600;color:var(--text-muted)">Mitigation:</span> ${escHtml(r.mit)}</div>`:`<div style="font-size:12px;color:var(--danger);margin-top:4px;font-style:italic">No mitigation yet</div>`}
+            </div>`;
+          });
+          html+=`</div>`;
+        }
+
+        // Requirements
+        if(opp.requirements.length){
+          html+=`<div>
+            <div style="font-size:11px;color:var(--info);text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:8px">Requirements</div>`;
+          opp.requirements.forEach(r=>{
+            const sc={Confirmed:'var(--success)',Open:'var(--warning)',Gap:'var(--danger)'};
+            const sb={Confirmed:'var(--success)14',Open:'var(--warning)14',Gap:'var(--danger)14'};
+            const c=sc[r.status]||'var(--info)';
+            const b=sb[r.status]||'var(--info)14';
+            html+=`<div style="margin-bottom:8px;padding:10px 14px;background:var(--info)06;border-radius:var(--radius-xs);border-left:2px solid ${c}55">
+              ${r.date||r.meeting?`<div style="font-size:11px;color:var(--text-muted);margin-bottom:3px">${escHtml(r.date)} ${escHtml(r.meeting)}</div>`:''}
+              <div style="font-size:13px;color:var(--text-secondary)">${escHtml(r.text)}
+                <span style="display:inline-block;font-size:10px;padding:2px 8px;border-radius:8px;background:${b};color:${c};margin-left:8px;font-weight:700;border:1px solid ${c}33">${r.status}</span>
+              </div>
+            </div>`;
+          });
+          html+=`</div>`;
+        }
+
+        html+=`</div>`;
+      }
+    }
+
+    html+=`</div>`;
+  }
+  openDetail(r.title,html);
+}
+
+function parseWeeklyReportContent(content){
+  const result=[];
+  let currentCat=null;
+  let currentProduct=null;
+  let currentOpp=null;
+  let currentSection=''; // 'progress','risks','requirements','nextweek'
+  let currentMeeting=null;
+  const lines=content.split('\n');
+
+  for(const line of lines){
+    const t=line.trim();
+    if(t.startsWith('## ')){
+      currentCat={name:t.replace(/^## /,''),summary:'',products:[]};
+      result.push(currentCat);
+      currentProduct=null;currentOpp=null;currentSection='';currentMeeting=null;
+      continue;
+    }
+    if(t.startsWith('### Product: ')){
+      currentProduct={name:t.replace(/^### Product: /,''),opportunities:[]};
+      if(currentCat)currentCat.products.push(currentProduct);
+      currentOpp=null;currentSection='';currentMeeting=null;
+      continue;
+    }
+    if(t.startsWith('#### ')){
+      const parts=t.replace(/^#### /,'').split(' — ');
+      currentOpp={client:parts[0]||'',opportunity:parts[1]||'',budget:'-',stage:'',meetings:[],risks:[],requirements:[]};
+      // If no product yet, create a default one
+      if(currentCat){
+        if(currentCat.products.length===0){
+          currentProduct={name:currentCat.name,opportunities:[]};
+          currentCat.products.push(currentProduct);
+        }
+        currentCat.products[currentCat.products.length-1].opportunities.push(currentOpp);
+      }
+      currentSection='';currentMeeting=null;
+      continue;
+    }
+    if(t.startsWith('**Summary:**')&&currentCat){
+      currentCat.summary=t.replace(/^\*\*Summary:\*\*\s*/,'');
+      continue;
+    }
+    if(t.startsWith('- **Budget:**')&&currentOpp){
+      currentOpp.budget=t.replace(/^- \*\*Budget:\*\*\s*/,'');
+      continue;
+    }
+    if(t.startsWith('- **Stage:**')&&currentOpp){
+      currentOpp.stage=t.replace(/^- \*\*Stage:\*\*\s*/,'');
+      continue;
+    }
+    if(t.startsWith('- **Product:**')&&currentOpp){
+      currentOpp.stage=t.replace(/^- \*\*Product:\*\*\s*/,'');
+      continue;
+    }
+    if(t.startsWith('**This Week Progress:**')&&currentOpp){
+      currentSection='progress';currentMeeting=null;
+      continue;
+    }
+    if(t.startsWith('**Risks:**')&&currentOpp){
+      currentSection='risks';continue;
+    }
+    if(t.startsWith('**Requirements:**')&&currentOpp){
+      currentSection='requirements';continue;
+    }
+    if(t.startsWith('**Next Week Plan:**')&&currentOpp){
+      currentSection='nextweek';continue;
+    }
+    if(t==='---'){currentSection='';currentMeeting=null;continue;}
+
+    // Parse progress meetings
+    if(currentSection==='progress'&&currentOpp){
+      const meetMatch=t.match(/^(\d{4}-\d{2}-\d{2})\s+—\s+(.+)$/);
+      if(meetMatch){
+        currentMeeting={date:meetMatch[1],title:meetMatch[2],agenda:[]};
+        currentOpp.meetings.push(currentMeeting);
+      } else if(t.startsWith('- ')&&currentMeeting){
+        currentMeeting.agenda.push(t.replace(/^- /,''));
+      }
+    }
+
+    // Parse risks
+    if(currentSection==='risks'&&currentOpp&&t.startsWith('- ')){
+      const rm=t.replace(/^- /,'');
+      const rmMatch=rm.match(/^(\d{4}-\d{2}-\d{2})\s+(.+?):\s+(.+?)(\s*\(Mitigation:\s*|\s*$)/);
+      if(rmMatch){
+        let mit='';
+        const mitM=rm.match(/\(Mitigation:\s*(.+?)\)/);
+        if(mitM)mit=mitM[1];
+        currentOpp.risks.push({date:rmMatch[1],meeting:rmMatch[2],text:rmMatch[3].trim(),mit});
+      } else {
+        // Simpler format without date prefix
+        const simpleMatch=rm.match(/^(.+?)(\s*\(Mitigation:\s*|\s*$)/);
+        if(simpleMatch){
+          let mit='';
+          const mitM=rm.match(/\(Mitigation:\s*(.+?)\)/);
+          if(mitM)mit=mitM[1];
+          currentOpp.risks.push({date:'',meeting:'',text:simpleMatch[1].trim(),mit});
+        }
+      }
+    }
+
+    // Parse requirements
+    if(currentSection==='requirements'&&currentOpp&&t.startsWith('- ')){
+      const rq=t.replace(/^- /,'');
+      const rqMatch=rq.match(/^(\d{4}-\d{2}-\d{2})\s+(.+?):\s+(.+?)(\s*\[|$)/);
+      if(rqMatch){
+        let status='Open';
+        const stM=rq.match(/\[(Confirmed|Open|Gap)\]/);
+        if(stM)status=stM[1];
+        currentOpp.requirements.push({date:rqMatch[1],meeting:rqMatch[2],text:rqMatch[3].trim(),status});
+      } else {
+        const simpleMatch=rq.match(/^(.+?)(\s*\[|$)/);
+        if(simpleMatch){
+          let status='Open';
+          const stM=rq.match(/\[(Confirmed|Open|Gap)\]/);
+          if(stM)status=stM[1];
+          currentOpp.requirements.push({date:'',meeting:'',text:simpleMatch[1].trim(),status});
+        }
+      }
+    }
+  }
+
+  // Ensure every category has at least one product
+  for(const cat of result){
+    if(cat.products.length===0){
+      cat.products.push({name:cat.name,opportunities:[]});
+    }
+  }
+
+  return result;
+}
+
+async function openArchiveClient(type,year,client){
+  const res=await fetch(`/api/archive/${type}/${year}/${encodeURIComponent(client)}`);
+  const opps=await res.json();
+  const color=type==='Won'?'var(--success)':'var(--danger)';
+  const label=type==='Won'?'Won':'Lost';
+  let html=`<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">${label} · ${year}</div>`;
+  html+=`<div class="detail-section"><h4>${escHtml(client)}</h4><div class="detail-content">`;
+  opps.forEach(o=>{
+    const oppName=o.folder.replace(/^OPP-\d+-/,'').replace(/-/g,' ');
+    html+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="openArchiveOpp('${escAttr(o.folder)}','${type}','${year}','${escAttr(client)}')">
+      <span style="font-size:11px;font-weight:600;color:var(--text-primary);flex:1">${escHtml(oppName)}</span>
+      <span style="width:8px;height:8px;border-radius:50%;background:${color};display:inline-block"></span>
+    </div>`;
+  });
+  html+=`</div></div>`;
+  openDetail(client,html);
+}
+
+async function openArchiveOpp(folder,type,year,client){
+  const res=await fetch(`/api/archive/${type}/${year}/${encodeURIComponent(client)}/${encodeURIComponent(folder)}`);
+  const opp=await res.json();
+  if(opp.error)return showToast(opp.error,'error');
+  const label=type==='Won'?'Won':'Lost';
+  const color=type==='Won'?'var(--success)':'var(--danger)';
+
+  let html=`<div style="font-size:11px;color:var(--text-muted);margin-bottom:10px">${label} · ${year} · ${escHtml(client)}</div>`;
+
+  // Archive Summary
+  if(opp.summary){
+    html+=`<div class="detail-section" style="border-left:3px solid ${color}"><h4 style="color:${color}">Archive Summary</h4><div class="detail-content" style="font-size:12px;line-height:1.8">${md2html(opp.summary)}</div></div>`;
+  }
+
+  // Opportunity info
+  if(opp.opportunity){
+    html+=`<div class="detail-section"><h4>Opportunity</h4><div class="detail-content" style="font-size:12px;line-height:1.8">${md2html(opp.opportunity)}</div></div>`;
+  }
+
+  // Timeline (meetings)
+  if(opp.meetings&&opp.meetings.length){
+    html+=`<div class="detail-section"><h4 style="display:flex;align-items:center;gap:6px"><svg style="width:13px;height:13px;color:var(--accent)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Timeline <span style="font-size:10px;color:var(--text-muted);font-weight:400">(${opp.meetings.length} meetings)</span></h4>`;
+    opp.meetings.forEach(m=>{
+      const mDate=m.fields?.Date||'';
+      const mTitle=m.fields?.Title||m.filename.replace('.md','');
+      const mAttendees=m.fields?.Attendees||'';
+      const agendaCount=(m.agenda||[]).length;
+      const reqCount=(m.requirements||[]).length;
+      const actCount=(m.actionItems||[]).length;
+      const riskCount=(m.risks||[]).length;
+      const qCount=(m.questions||[]).length;
+      const tags=[agendaCount?`${agendaCount} agenda`:'',reqCount?`${reqCount} reqs`:'',actCount?`${actCount} actions`:'',riskCount?`${riskCount} risks`:'',qCount?`${qCount} Q&A`:''].filter(Boolean).join(' · ');
+      html+=`<div class="timeline-item" style="cursor:pointer" onclick="this.querySelector('.tl-body').classList.toggle('open')">
+        <div class="tl-dot" style="background:${color}"></div>
+        <div style="flex:1">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;font-weight:600;color:var(--text-primary)">${escHtml(mTitle)}</span>
+            <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted)">${fmtDate(mDate)}</span>
+          </div>
+          ${mAttendees?`<div style="font-size:10px;color:var(--text-muted);margin-top:2px">${escHtml(mAttendees.length>80?mAttendees.slice(0,80)+'…':mAttendees)}</div>`:''}
+          ${tags?`<div style="font-size:9px;color:var(--text-muted);font-family:var(--font-mono);margin-top:3px">${tags}</div>`:''}
+          <div class="tl-body" style="max-height:0;overflow:hidden;transition:max-height .3s">
+            <div style="padding-top:8px;font-size:12px;line-height:1.8">${md2html(m.content||'')}</div>
+          </div>
+        </div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  const oppName=folder.replace(/^OPP-\d+-/,'').replace(/-/g,' ');
+  openDetail(oppName,html);
+}
+
+// --- Stage Cycling ---
+async function cycleStage(id,currentStage){
+  const activeStages=['Discovery','Proposal','Negotiation','Verbal Commit'];
+  const idx=activeStages.indexOf(currentStage);
+  if(idx===-1)return;
+  const next=activeStages[(idx+1)%activeStages.length];
+  const res=await apiPut(`/api/opportunities/${encodeURIComponent(id)}`,{stage:next});
+  if(res.error)return showToast(res.error,'error');
+  await loadAll();renderView();
+  showToast(`Stage updated to ${next}`);
+}
+
+async function closeDeal(id, result){
+  const label=result==='Won'?'Win':'Lose';
+  if(!confirm(`Mark this deal as ${label}? This will archive it.`))return;
+  const res=await apiPut(`/api/opportunities/${encodeURIComponent(id)}`,{stage:result});
+  if(res.error)return showToast(res.error,'error');
+  closeDetail();
+  await loadAll();renderView();
+  showToast(`Deal closed as ${label}`);
+}
+
+async function addStakeholder(id){
+  const o=summaryData.opportunities.find(x=>x.id===id);
+  if(!o)return;
+  const name=prompt('Stakeholder name:');
+  if(!name)return;
+  const role=prompt('Role:')||'TBD';
+  const influence=prompt('Influence (High/Medium/Low):')||'Medium';
+  const attitude=prompt('Attitude (Champion/Supporter/Neutral/Skeptic):')||'Neutral';
+  const updated=[...(o.stakeholders||[]),{name,role,influence,attitude}];
+  await saveOppField(id,'stakeholders',updated);
+}
+
+async function syncContacts(id){
+  const o=summaryData.opportunities.find(x=>x.id===id);
+  if(!o)return;
+  const res=await apiPost(`/api/opportunities/${encodeURIComponent(id)}/sync-contacts`);
+  if(res.error)return showToast(res.error,'error');
+  await loadAll();
+  if(_activeOppId===id)openOppDetail(id);
+  showToast(`Synced ${res.added||0} contacts (${res.total} total)`);
+}
+
+async function cycleInfluence(id,idx,current){
+  const cycle=['High','Medium','Low'];
+  const next=cycle[(cycle.indexOf(current)+1)%cycle.length];
+  const o=summaryData.opportunities.find(x=>x.id===id);
+  if(!o)return;
+  const updated=(o.stakeholders||[]).map((s,i)=>i===idx?{...s,influence:next}:s);
+  await saveOppField(id,'stakeholders',updated);
+}
+
+async function cycleAttitude(id,idx,current){
+  const cycle=['Champion','Supporter','Neutral','Skeptic'];
+  const next=cycle[(cycle.indexOf(current)+1)%cycle.length];
+  const o=summaryData.opportunities.find(x=>x.id===id);
+  if(!o)return;
+  const updated=(o.stakeholders||[]).map((s,i)=>i===idx?{...s,attitude:next}:s);
+  await saveOppField(id,'stakeholders',updated);
+}
+
+async function removeStakeholder(id,index){
+  const o=summaryData.opportunities.find(x=>x.id===id);
+  if(!o)return;
+  const updated=(o.stakeholders||[]).filter((_,i)=>i!==index);
+  await saveOppField(id,'stakeholders',updated);
+}
+
+// --- Init ---
+async function init(){
+  await loadAll();
+  renderView();
+}
+init();
+</script>
+</body>
+</html>

@@ -12,6 +12,8 @@
 
 ```
 00-Clients/Client-<Name>/Client.md       — 客户档案 + 联系人
+00-Inbox/                                — 原始会议笔记收件箱（.txt/.md）
+  └── done/                              — meeting-capture 处理完成后自动移入
 01-Opportunities/OPP-<###>-<Client>-<Name>/ — 商机目录
   ├── Opportunity.md                      — 核心数据
   └── Meetings/<date>-<title>.md          — 会议纪要
@@ -133,7 +135,7 @@ Opportunity.md 新增 `- **Stage History:** Discovery:2026-05-01, Proposal:2026-
 
 ## Skills
 
-项目目录下有四个可安装的 Claude Skill：
+项目目录下有五个可安装的 Claude Skill：
 
 ### sales-opp-management/SKILL.md
 自然语言操作 CRM：创建客户/商机、记录会议、跟踪行动项、生成周报。
@@ -146,6 +148,9 @@ Opportunity.md 新增 `- **Stage History:** Discovery:2026-05-01, Proposal:2026-
 
 ### meeting-prep/SKILL.md
 会前准备助手：交叉分析商机 Requirements / Actions / Risks / Stakeholders，识别盲点（UNCOVERED Gap / UNADDRESSED Risk）与丢单风险（RED/YELLOW/GREEN 评级），输出具体会议打法（Game Plan: 主目标、开场策略、地雷、请求、后备）。简报结构：分析在前半页，原始数据折叠在 `<details>` 里。语言跟随用户，专有名词保留英文。
+
+### meeting-capture/SKILL.md
+会后录入助手：从原始会议笔记中提取结构化数据（title、date、venue、attendees、agenda、requirements、risks、actions、questions），自动匹配商机。检查同日期是否已有会议文件——有则去重合并补充（TBD 占位替换为真实内容），无则创建新会议 MD。支持从 `00-Inbox/` 目录自动扫描原始笔记文件（`.txt`/`.md`/`.docx`/`.pdf`），处理完移入 `00-Inbox/done/`。**无论源文件语言，提取的结构化内容统一输出英文**，仅中文人名和无通用英文名的产品中文名保留原文。
 
 **安装方式**：将对应文件夹复制到 `~/.claude/skills/` 下即可，文件夹名和 SKILL.md 文件名不要改。
 

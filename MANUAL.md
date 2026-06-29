@@ -34,6 +34,9 @@ No build step, no bundler, no package.json. Everything runs from two files.
 │   └── Client-<Name>/
 │       └── Client.md                 # Client profile + contacts
 │
+├── 00-Inbox/                        # Raw meeting notes inbox
+│   └── done/                        # Processed files (auto-moved)
+│
 ├── 01-Opportunities/                # One folder per active opportunity
 │   └── OPP-<###>-<Client>-<Name>/
 │       ├── Opportunity.md            # Core opp data
@@ -349,7 +352,7 @@ The server uses only Node.js built-ins. To add a new API route:
 
 ## Skills (Agent Skills)
 
-本项目包含两个可安装的 Claude skill，供销售团队成员的 agent 加载使用。
+本项目包含五个可安装的 Claude skill，供销售团队成员的 agent 加载使用。
 
 ### sales-opp-management
 
@@ -382,6 +385,39 @@ The server uses only Node.js built-ins. To add a new API route:
 - "把周报整理成例会汇报材料"
 - "生成销售周报 2026-06-01 ~ 2026-06-22"
 
+### meeting-prep
+
+路径：`meeting-prep/SKILL.md`
+
+功能：会前准备助手。交叉分析商机 Requirements / Actions / Risks / Stakeholders，识别盲点（UNCOVERED Gap / UNADDRESSED Risk）与丢单风险（RED/YELLOW/GREEN 评级），输出具体会议打法（Game Plan）。语言跟随用户，专有名词保留英文。
+
+安装：将 `meeting-prep` 文件夹复制到 `~/.claude/skills/` 下即可。
+
+使用示例：
+- "帮我准备 Softspace 的下次会议"
+- "prepare next meeting for PetroEdge"
+
+### meeting-capture
+
+路径：`meeting-capture/SKILL.md`
+
+功能：会后录入助手。从原始会议笔记中提取结构化数据（title、date、venue、attendees、agenda、requirements、risks、actions、questions），自动匹配商机。同日期已有会议则去重合并补充（TBD 占位替换为真实内容），无则创建新会议 MD。支持从 `00-Inbox/` 自动扫描原始笔记文件（`.txt`/`.md`/`.docx`/`.pdf`），处理完移入 `00-Inbox/done/`。**无论源文件语言，提取的结构化内容统一输出英文**，仅中文人名和无通用英文名的产品中文名保留原文。
+
+安装：将 `meeting-capture` 文件夹复制到 `~/.claude/skills/` 下即可。
+
+使用示例：
+- "帮我录入这次会议纪要" + 粘贴笔记
+- "录入 00-Inbox 里的会议笔记"
+- "capture these meeting minutes"
+
+### version-upgrade
+
+路径：`version-upgrade/SKILL.md`
+
+功能：版本升级工具。对比新旧版本代码 diff，只覆盖代码文件，不碰数据目录，自动备份旧代码、同步缺失的 skill、更新版本号。
+
+安装：将 `version-upgrade` 文件夹复制到 `~/.claude/skills/` 下即可。
+
 ---
 
 ## File Quick Reference
@@ -389,6 +425,7 @@ The server uses only Node.js built-ins. To add a new API route:
 | What | Where | Editable Outside App |
 |------|-------|---------------------|
 | Client profiles | `00-Clients/Client-<Name>/Client.md` | Yes |
+| Raw meeting notes | `00-Inbox/*.txt` or `*.md` | Yes (meeting-capture processes and moves to `done/`) |
 | Opportunity data | `01-Opportunities/OPP-<###>/Opportunity.md` | Yes |
 | Meeting notes | `01-Opportunities/OPP-<###>/Meetings/<date>-<title>.md` | Yes |
 | Weekly reports | `02-WeeklyReports/Weekly Report - <range>.md` | Yes (but will be overwritten on next generate) |

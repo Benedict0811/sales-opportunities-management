@@ -285,3 +285,33 @@ Next Action 字段改为结构化格式 `计划内容 — by yyyy-mm-dd — [Pla
 **踩坑：** 早期只有 Dashboard 有客户筛选，其他页面只能全文滚动查找。
 
 **正确做法：** 复用 Dashboard 的芯片模式（`chipCls` 全局函数），在 Resources、Activity（meetings tab）、Requirements 页面顶部各加一行客户筛选芯片。筛选值用 `window._resFilter` / `window._actFilter` / `window._reqFilter` 独立存储。切换视图时在 `switchView()` 中重置非当前页的筛选，避免切回看到空列表。
+
+---
+
+## 二十四、Meeting Capture Skill 的 Inbox 机制
+
+`meeting-capture` skill 使用 `00-Inbox/` 作为原始会议笔记的收件箱，处理完成后文件移到 `00-Inbox/done/`。
+
+**踩坑：** 如果不自动移动已处理文件，下次触发 skill 时会重复处理同一份笔记，导致会议纪要重复创建。
+
+**正确做法：** 每次 meeting-capture 成功创建或更新会议 MD 后，将源文件 `mv` 到 `00-Inbox/done/`。skill 的 Setup 步骤必须 `mkdir -p "00-Inbox/done"` 确保目录存在。如果用户直接粘贴笔记而非放文件，则不涉及移动操作。
+
+---
+
+## 二十五、Meeting Capture 更新模式的去重合并
+
+当同日期已有会议 MD 文件时，meeting-capture 进入更新模式，将新提取的 requirements/risks/actions/questions 追加到已有数据。
+
+**踩坑：** 不做去重直接追加，导致语义相同的条目重复出现（如已有 "IEC 62443 certification — [Gap]"，又追加一条 "IEC 62443 compliance — [Gap]"）。
+
+**正确做法：** 合并前对每个数组做语义去重——比较 `text`/`risk`/`question` 字段，语义相同的跳过。同时优先替换 TBD 占位符（如原会议 Agenda 含 "TBD"、Action Items 含 "TBD — [Open]"），用真实内容替换而非追加。
+
+---
+
+## 二十六、Meeting Capture 输出语言必须统一为英文
+
+meeting-capture 写入的会议 MD 文件是后续 meeting-prep、weekly-report-polap 等所有 skill 的数据源。如果会议纪要中混入中文/马来文内容，下游 skill 的跨会议分析、去重合并、周报聚合都会出错——同一个需求在两次会议中分别是中文和英文，无法识别为同一条。
+
+**踩坑：** 早期允许按原始语言录入，导致同一商机的会议纪要中英混杂，meeting-prep 无法跨会议关联 Requirements/Risks，周报漏斗统计也不准确。
+
+**正确做法：** 无论源文件语言（中文、马来文、英文等），meeting-capture 提取后所有结构化内容（title、agenda、requirements、risks、actions、questions）统一翻译为英文写入 MD。仅两种例外保留原文：①中文人名（张伟、李明），②无通用英文名的产品中文名（金山文档）。客户端名、产品名、商机名、技术术语按 Language Rules 保留英文。
